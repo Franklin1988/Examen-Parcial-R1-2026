@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50 antialiased">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d9488">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Evaluación de Juicio Clínico en Medicina Familiar - PWA Offline-First">
+  <title>MedEval PWA - Juicio Clínico Familiar</title>
+
+  <!-- PWA Manifest Link -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.svg">
+
+  <!-- QRCode.js (Ligero, 19KB, para escaneo presencial offline por docente) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            med: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            }
+          },
+          fontFamily: {
+            sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
+          },
+          keyframes: {
+            shake: {
+              '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+              '20%, 80%': { transform: 'translate3d(3px, 0, 0)' },
+              '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+              '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Mobile-first touch polish */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+    }
+    input, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    /* Hide scrollbars for clean app feeling */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Tactile range slider custom styling */
+    input[type=range]::-webkit-slider-thumb {
+      height: 28px;
+      width: 28px;
+      border-radius: 9999px;
+      background: #0d9488;
+      cursor: pointer;
+      border: 3px solid #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1);
+      -webkit-appearance: none;
+      margin-top: -10px;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #e2e8f0;
+      border-radius: 9999px;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 bg-slate-100 overflow-x-hidden">
+
+  <!-- ==================== HEADER BAR ==================== -->
+  <header id="app-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shadow-xs transition-all duration-300">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-8 h-8 rounded-lg bg-med-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+        ⚕
+      </div>
+      <div>
+        <h1 class="text-sm font-bold text-slate-900 leading-tight">MedEval Clinical</h1>
+        <p id="header-student-badge" class="text-[11px] text-slate-500 font-medium truncate max-w-[150px]">Medicina Familiar</p>
+      </div>
+    </div>
+
+    <!-- Timer and Status Badges -->
+    <div class="flex items-center space-x-2">
+      <!-- Incidences Badge -->
+      <div id="incidents-badge" class="hidden items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200" title="Cambios de pestaña">
+        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span id="incidents-count">0</span>
+      </div>
+
+      <!-- Live Countdown Clock -->
+      <div id="timer-badge" class="hidden items-center px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-900 text-white shadow-xs">
+        <svg class="w-3.5 h-3.5 mr-1.5 text-med-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span id="timer-display">00:00</span>
+      </div>
+
+      <!-- Network Status Indicator -->
+      <div id="network-pill" class="flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="network-label">Online</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar (Active only during test) -->
+  <div id="progress-container" class="hidden w-full bg-slate-200 h-1.5 overflow-hidden">
+    <div id="progress-bar" class="bg-med-600 h-1.5 transition-all duration-300 ease-out" style="width: 0%"></div>
+  </div>
+
+  <!-- ==================== MAIN CONTENT CONTAINER ==================== -->
+  <main id="app-container" class="flex-1 w-full max-w-lg mx-auto p-4 flex flex-col justify-start">
+    <!-- Views will be dynamically injected here by the State Machine -->
+  </main>
+
+  <!-- ==================== SYSTEM MODALS & OVERLAYS ==================== -->
+
+  <!-- Anti-Collusion Security Alert (Blur / Visibility Loss) -->
+  <div id="security-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center border-2 border-rose-500 animate-shake">
+      <div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center mb-4">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">¡Alerta de Seguridad Registrada!</h3>
+      <p class="text-xs text-rose-600 font-semibold mb-2">Desvío de foco / Cambio de aplicación</p>
+      <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+        Has abandonado o minimizado la ventana del examen. Esta incidencia ha sido registrada y formará parte de la telemetría auditada por el docente.
+      </p>
+      <div class="bg-rose-50 border border-rose-200 rounded-lg p-2.5 mb-5 text-xs text-rose-800 font-mono">
+        Total incidencias acumuladas: <strong id="modal-incidents-count" class="text-sm">1</strong>
+      </div>
+      <button id="btn-acknowledge-security" class="w-full py-3 px-4 rounded-xl bg-rose-600 active:bg-rose-700 text-white font-semibold text-sm shadow-md transition-all">
+        Entendido, Volver al Examen
+      </button>
+    </div>
+  </div>
+
+  <!-- Stage Lock Confirmation Modal (Gated Steps) -->
+  <div id="gated-lock-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-200">
+      <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center mb-3.5">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+      </div>
+      <h3 class="text-base font-bold text-slate-900 mb-1.5">Bloqueo Definitivo de Etapa</h3>
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Al confirmar, <strong class="text-slate-900">esta etapa quedará sellada</strong>. No podrás retroceder ni alterar tus respuestas para este caso clínico.
+      </p>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="btn-cancel-lock" class="py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 font-medium text-sm active:bg-slate-100 transition-colors">
+          Revisar
+        </button>
+        <button id="btn-confirm-lock" class="py-2.5 px-4 rounded-xl bg-med-600 active:bg-med-700 text-white font-semibold text-sm shadow-md transition-all">
+          Sellar y Avanzar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-3">
+    <div id="toast-body" class="bg-slate-900/90 text-white text-xs font-medium py-2 px-4 rounded-full shadow-lg flex items-center space-x-2">
+      <span id="toast-icon">⚠️</span>
+      <span id="toast-message">Notificación</span>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION CORE ==================== -->
+  <script>
+    /**
+     * MedEval PWA - Core Architecture & State Machine
+     * Mobile-first, Offline-first, Zero External Heavy Deps
+     */
+
+    // --- CONFIGURATION & CONSTANTS ---
+    const CONFIG = {
+      EXAM_TITLE: "Evaluación Práctica: Medicina Familiar y Comunitaria",
+      EXAM_CODE: "MF-2026-P1",
+      SESSION_PIN: "2026", // PIN de 4 dígitos para sincronización simultánea
+      EXAM_DURATION_MINUTES: 15,
+      WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzxtS26_PqR-ONHTWL6qEYEhHQOUwBNc4-YGhLGpzE3pwELqiE8yLbkHqyT0OfCmdLCkw/exec",
+      SALT_INTEGRITY: "MEDEVAL-FAMILIAR-HASH-2026-SECURE",
+      PASSING_GRADE: 6.0,
+      MAX_GRADE: 10.0
+    };
+
+    // --- CLINICAL QUESTION BANK (JSON SCHEMA) ---
+    // Incluye los 5 tipos de widgets interactivos requeridos
+    const CLINICAL_ITEMS_BANK = [
+      {
+        id: "ITEM-01",
+        type: "semaforo_evidencia",
+        titulo: "Actividades Preventivas en Adulto Mayor (72 años)",
+        contexto: "Varón de 72 años, asintomático, exfumador hace 15 años, acude a control de salud en Atención Primaria. Clasifique las siguientes intervenciones según la evidencia clínica actual (USPSTF / PAPPS).",
+        intervenciones: [
+          { id: "i1", text: "Vacunación antigripal anual y antineumocócica conjugada", correct: "fuerte" },
+          { id: "i2", text: "Determinación seriada de PSA sin sintomatología urinaria", correct: "iatrogenica" },
+          { id: "i3", text: "Cribado de Cáncer Colorrectal hasta los 75 años (FIT anual)", correct: "fuerte" },
+          { id: "i4", text: "Densitometría ósea de rutina en varón asintomático sin factores de riesgo", correct: "selectiva" },
+          { id: "i5", text: "Prescripción de Ácido Acetilsalicílico 100 mg para prevención cardiovascular primaria", correct: "iatrogenica" }
+        ],
+        puntos_acierto: 2,
+        penalizacion_iatrogenica: 3 // Penaliza severamente recomendar una práctica no indicada
+      },
+      {
+        id: "ITEM-02",
+        type: "decision_binaria",
+        titulo: "Toma de Decisión Rápida: Oportunidad Vacunal",
+        contexto: "Lactante de 12 meses traído por su madre para vacunación (SRP + Meningococo C). Al examen: T° axilar 37.4°C, rinorrea hialina leve, activo, hidratado y alimentándose con normalidad. ¿Cuál es la conducta inmediata?",
+        opciones: [
+          { id: "opt-proceder", label: "PROCEDER CON VACUNACIÓN", desc: "La febrícula y catarro de vías altas leve no constituyen contraindicación.", es_correcta: true },
+          { id: "opt-diferir", label: "DIFERIR / CONTRAINDICAR", desc: "Citar en 7 días tras resolución completa del cuadro catarral.", es_correcta: false }
+        ],
+        retroalimentacion_rapida: "Falsa contraindicación vacunal: diferir vacunas por cuadros catarrales leves genera oportunidades perdidas de inmunización."
+      },
+      {
+        id: "ITEM-03",
+        type: "presupuesto_restringido",
+        titulo: "Uso Racional de Recursos: Dispepsia no Investigada",
+        contexto: "Mujer de 38 años, sin antecedentes relevantes, consulta por epigastralgia urente de 2 meses de evolución. Sin signos de alarma (no disfagia, no pérdida de peso, no sangrado). Alta prevalencia de H. pylori en la comunidad. Dispone de un presupuesto estricto: Seleccione EXACTAMENTE 2 estudios iniciales pertinentes.",
+        max_seleccion: 2,
+        opciones: [
+          { id: "p1", text: "Test del aliento con 13C-urea (o antígeno fecal para H. pylori)", es_optima: true },
+          { id: "p2", text: "Endoscopia digestiva alta urgente", es_optima: false },
+          { id: "p3", text: "Hemograma completo", es_optima: true },
+          { id: "p4", text: "Ecografía abdominal total", es_optima: false },
+          { id: "p5", text: "Tránsito esofagogastroduodenal baritado", es_optima: false }
+        ],
+        ponderacion: { acierto: 5, error: -2 }
+      },
+      {
+        id: "ITEM-04",
+        type: "umbral_slider",
+        titulo: "Umbral Clínico de Cribado: Diabetes Mellitus Tipo 2",
+        contexto: "Según las guías ADA y recomendaciones de Medicina Familiar para cribado poblacional universal de Diabetes Mellitus tipo 2 en adultos asintomáticos sin factores de riesgo adicionales: ¿A partir de qué edad (años) se debe iniciar el tamizaje periódico con glucemia plasmática o HbA1c?",
+        slider_config: {
+          min: 20,
+          max: 65,
+          step: 1,
+          defecto: 30,
+          unidad: "años",
+          valor_objetivo: 35, // ADA Update 2022-2026: Cribado universal desde los 35 años
+          margen_tolerancia: 0, // Tolerancia estricta
+          margen_parcial: 5    // Si marca entre 30 y 40 da crédito parcial
+        }
+      },
+      {
+        id: "ITEM-05",
+        type: "script_concordance",
+        titulo: "Prueba de Concordancia de Guiones Clínicos (SCT)",
+        contexto: "Hombre de 56 años con hipertensión arterial en tratamiento con Enalapril 20 mg/día acude por cuadro de tos seca persistente de 4 semanas, sin fiebre ni disnea.",
+        hipotesis_inicial: "La tos es un efecto secundario inducido por el inhibidor de la ECA (Enalapril).",
+        nuevo_hallazgo: "El paciente suspendió el Enalapril por iniciativa propia hace 3 semanas y la tos persiste con la misma intensidad.",
+        // Ponderación de consenso de panel de expertos médicos (SCT Methodology)
+        escala_sct: [
+          { valor: -2, label: "-2", desc: "Prácticamente descartada", peso: 1.0 }, // Consenso experto: si persiste >2-3 semanas sin IECA, cae fuertemente la probabilidad
+          { valor: -1, label: "-1", desc: "Menos probable", peso: 0.6 },
+          { valor: 0,  label: "0",  desc: "Efecto neutro / no cambia", peso: 0.0 },
+          { valor: 1,  label: "+1", desc: "Más probable", peso: 0.0 },
+          { valor: 2,  label: "+2", desc: "Prácticamente confirmada", peso: 0.0 }
+        ]
+      }
+    ];
+
+    // --- PSEUDO-RANDOM NUMBER GENERATOR (MULBERRY32 SEED) ---
+    // Garantiza que el Carné del alumno baraje reactivos y opciones de forma determinista y reproducible
+    function createPRNG(seedNumber) {
+      let s = seedNumber >>> 0;
+      return function() {
+        s = (s + 0x6D2B79F5) | 0;
+        let t = Math.imul(s ^ (s >>> 15), 1 | s);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // Convierte cualquier string de Carnet/Matricula en un seed entero de 32 bits
+    function hashStringToSeed(str) {
+      let hash = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    // Fisher-Yates shuffle con PRNG inyectado
+    function shuffleArray(array, rng) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // --- APPLICATION STATE MANAGER ---
+    const APP_STATE = {
+      // Estado de máquina: 'LOBBY' | 'EXAM' | 'COMPLETED'
+      currentView: 'LOBBY',
+      student: {
+        nombre: '',
+        carnet: '',
+        pin: ''
+      },
+      shuffledItems: [],
+      currentStageIndex: 0,
+      responses: {}, // { [itemId]: responseData }
+      lockedStages: {}, // { [stageIndex]: true }
+      telemetry: {
+        startTime: null,
+        endTime: null,
+        totalDurationSeconds: 0,
+        tabSwitchesCount: 0,
+        tabSwitchLogs: [],
+        stageTimeSpent: {} // { [stageIndex]: seconds }
+      },
+      timerInterval: null,
+      secondsRemaining: CONFIG.EXAM_DURATION_MINUTES * 60,
+      isSubmitting: false,
+      submissionReceipt: null
+    };
+
+    // --- VIBRATION UTILITY (Haptic feedback en móviles) ---
+    function vibrate(pattern = 25) {
+      if ('vibrate' in navigator) {
+        try { navigator.vibrate(pattern); } catch(e){}
+      }
+    }
+
+    // --- TOAST NOTIFICATIONS ---
+    function showToast(message, icon = 'ℹ️', duration = 2800) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      const iconEl = document.getElementById('toast-icon');
+      msgEl.textContent = message;
+      iconEl.textContent = icon;
+      toast.classList.remove('opacity-0', 'translate-y-3', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      vibrate(15);
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3', 'pointer-events-none');
+      }, duration);
+    }
+
+    // --- ANTI-COLLUSION & SECURITY OBSERVERS ---
+    function initSecurityListeners() {
+      const handleFocusLost = (eventName) => {
+        if (APP_STATE.currentView !== 'EXAM') return;
+        
+        APP_STATE.telemetry.tabSwitchesCount++;
+        const logEntry = {
+          event: eventName,
+          timestamp: new Date().toISOString(),
+          atStage: APP_STATE.currentStageIndex + 1,
+          secondsRemaining: APP_STATE.secondsRemaining
+        };
+        APP_STATE.telemetry.tabSwitchLogs.push(logEntry);
+
+        // Actualizar contador visual en header
+        const countBadge = document.getElementById('incidents-count');
+        if (countBadge) countBadge.textContent = APP_STATE.telemetry.tabSwitchesCount;
+
+        // Modal de advertencia
+        const secModal = document.getElementById('security-modal');
+        const modalCount = document.getElementById('modal-incidents-count');
+        if (modalCount) modalCount.textContent = APP_STATE.telemetry.tabSwitchesCount;
+        secModal.classList.remove('hidden');
+        vibrate([50, 100, 50]);
+        saveStateToLocalStorage();
+      };
+
+      // Detección estricta de cambio de visibilidad (pestaña / minimizar / abrir otra app)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          handleFocusLost('visibility_hidden');
+        }
+      });
+
+      // Detección de pérdida de foco de ventana
+      window.addEventListener('blur', () => {
+        handleFocusLost('window_blur');
+      });
+
+      // Botón para cerrar advertencia de seguridad
+      document.getElementById('btn-acknowledge-security').addEventListener('click', () => {
+        document.getElementById('security-modal').classList.add('hidden');
+      });
+
+      // Monitoreo de conectividad (Online / Offline)
+      const updateNetworkStatus = () => {
+        const pill = document.getElementById('network-pill');
+        const label = document.getElementById('network-label');
+        if (navigator.onLine) {
+          pill.className = "flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800";
+          pill.firstElementChild.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+          label.textContent = "Online";
+        } else {
+          pill.className = "flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800";
+          pill.firstElementChild.className = "w-2 h-2 rounded-full bg-amber-500";
+          label.textContent = "Offline";
+          showToast("Modo Offline activado. Tus respuestas se guardan localmente.", "📡", 4000);
+        }
+      };
+      window.addEventListener('online', updateNetworkStatus);
+      window.addEventListener('offline', updateNetworkStatus);
+      updateNetworkStatus();
+
+      // Prevención de recarga accidental
+      window.addEventListener('beforeunload', (e) => {
+        if (APP_STATE.currentView === 'EXAM') {
+          e.preventDefault();
+          e.returnValue = 'La evaluación está en curso. Si recargas podrías perder el flujo.';
+        }
+      });
+    }
+
+    // --- PERSISTENCIA LOCAL STORAGE (OFFLINE RESILIENCE) ---
+    const STORAGE_KEY = 'medeval_active_session_v1';
+
+    function saveStateToLocalStorage() {
+      try {
+        const snapshot = {
+          student: APP_STATE.student,
+          currentView: APP_STATE.currentView,
+          currentStageIndex: APP_STATE.currentStageIndex,
+          responses: APP_STATE.responses,
+          lockedStages: APP_STATE.lockedStages,
+          telemetry: APP_STATE.telemetry,
+          secondsRemaining: APP_STATE.secondsRemaining,
+          submissionReceipt: APP_STATE.submissionReceipt
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+      } catch (err) {
+        console.warn("Error guardando en localStorage:", err);
+      }
+    }
+
+    function tryRestoreSession() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (!saved.student || !saved.student.carnet) return false;
+
+        // Si ya completó la prueba, restaurar pantalla de éxito
+        if (saved.currentView === 'COMPLETED' && saved.submissionReceipt) {
+          Object.assign(APP_STATE, saved);
+          renderResultsView();
+          return true;
+        }
+
+        // Si estaba en curso y le queda tiempo
+        if (saved.currentView === 'EXAM' && saved.secondsRemaining > 0) {
+          Object.assign(APP_STATE, saved);
+          // Re-armar las preguntas barajadas con el carné guardado
+          const seed = hashStringToSeed(APP_STATE.student.carnet.trim().toUpperCase());
+          const rng = createPRNG(seed);
+          APP_STATE.shuffledItems = shuffleArray(CLINICAL_ITEMS_BANK, rng);
+          startExamSession(true); // resume
+          return true;
+        }
+      } catch (e) {
+        console.error("Error al restaurar sesión previa", e);
+      }
+      return false;
+    }
+
+    // --- TIMERS & COUNTDOWN ---
+    function startTimer() {
+      const timerBadge = document.getElementById('timer-badge');
+      const timerDisplay = document.getElementById('timer-display');
+      timerBadge.classList.remove('hidden');
+      timerBadge.classList.add('flex');
+
+      clearInterval(APP_STATE.timerInterval);
+      APP_STATE.timerInterval = setInterval(() => {
+        APP_STATE.secondsRemaining--;
+        APP_STATE.telemetry.totalDurationSeconds++;
+
+        // Registrar tiempo en la etapa activa
+        const currentStage = APP_STATE.currentStageIndex;
+        APP_STATE.telemetry.stageTimeSpent[currentStage] = (APP_STATE.telemetry.stageTimeSpent[currentStage] || 0) + 1;
+
+        const m = Math.floor(APP_STATE.secondsRemaining / 60);
+        const s = APP_STATE.secondsRemaining % 60;
+        timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+        // Alerta visual de último minuto
+        if (APP_STATE.secondsRemaining <= 60 && APP_STATE.secondsRemaining > 0) {
+          timerBadge.classList.remove('bg-slate-900');
+          timerBadge.classList.add('bg-rose-600', 'animate-pulse-fast');
+          if (APP_STATE.secondsRemaining === 60) {
+            showToast("¡Atención! Queda 1 minuto para finalizar.", "⏳", 4000);
+            vibrate([100, 50, 100]);
+          }
+        }
+
+        // Guardar cada 5 segundos
+        if (APP_STATE.secondsRemaining % 5 === 0) {
+          saveStateToLocalStorage();
+        }
+
+        // Tiempo agotado
+        if (APP_STATE.secondsRemaining <= 0) {
+          clearInterval(APP_STATE.timerInterval);
+          showToast("Tiempo concluido. Calculando y enviando respuestas...", "🛑", 4000);
+          finalizeEvaluation();
+        }
+      }, 1000);
+    }
+
+    // --- HASH CRIPTOGRÁFICO DE SEGURIDAD (ANTI-FRAUDE) ---
+    async function generateSecurityToken(payload) {
+      const rawString = `${payload.carnet}|${payload.nota_final}|${payload.tiempo_empleado_segundos}|${payload.cambios_de_pestana}|${CONFIG.SALT_INTEGRITY}`;
+      
+      try {
+        if (window.crypto && window.crypto.subtle) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(rawString);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
+        }
+      } catch (err) {
+        console.warn("SubtleCrypto no disponible, utilizando fallback hash", err);
+      }
+
+      // Fallback hash determinista si crypto.subtle está restringido
+      let hash = 0;
+      for (let i = 0; i < rawString.length; i++) {
+        const char = rawString.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+      }
+      return 'HASH-' + Math.abs(hash).toString(16).toUpperCase() + '-' + Date.now().toString(36);
+    }
+
+    // =========================================================================
+    // VISTAS Y CONTROLADORES
+    // =========================================================================
+
+    // --- 1. VISTA DE LOBBY / BIENVENIDA ---
+    function renderLobbyView() {
+      APP_STATE.currentView = 'LOBBY';
+      const container = document.getElementById('app-container');
+      
+      container.innerHTML = `
+        <div class="flex-1 flex flex-col justify-center py-4">
+          <!-- Card Principal del Lobby -->
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+            <div class="text-center mb-6">
+              <div class="w-14 h-14 bg-med-100 text-med-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <h2 class="text-xl font-bold text-slate-900">${CONFIG.EXAM_TITLE}</h2>
+              <p class="text-xs text-slate-500 mt-1 font-mono">${CONFIG.EXAM_CODE} &bull; Duración: ${CONFIG.EXAM_DURATION_MINUTES} min</p>
+            </div>
+
+            <!-- Formulario de Ingreso -->
+            <form id="form-lobby" class="space-y-4" onsubmit="event.preventDefault();">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Nombre Completo</label>
+                <div class="relative">
+                  <input type="text" id="input-nombre" required placeholder="Ej. Dr. Carlos Méndez" autocomplete="name"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-med-500 focus:ring-2 focus:ring-med-200 outline-none transition-all">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Carné / Matrícula Estudiantil
+                  <span class="text-[10px] lowercase font-normal text-slate-400">(Semilla de aleatorización)</span>
+                </label>
+                <div class="relative">
+                  <input type="text" id="input-carnet" required placeholder="Ej. MED-2023-908" autocomplete="off" autocapitalize="characters"
+                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono uppercase focus:border-med-500 focus:ring-2 focus:ring-med-200 outline-none transition-all">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                  PIN de Sesión (Aula)
+                  <span class="text-[10px] lowercase font-normal text-slate-400">(4 dígitos sincronizados)</span>
+                </label>
+                <div class="relative">
+                  <input type="password" id="input-pin" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="••••" required
+                    class="w-full px-3.5 py-2.5 text-center text-lg tracking-widest font-mono rounded-xl border border-slate-300 focus:border-med-500 focus:ring-2 focus:ring-med-200 outline-none transition-all">
+                </div>
+                <p id="pin-feedback" class="text-[11px] text-slate-400 text-center mt-1">El docente dictará el PIN al iniciar la prueba</p>
+              </div>
+
+              <!-- Checkbox Modo Pantalla Completa Opcional -->
+              <div class="flex items-center space-x-2.5 pt-1">
+                <input type="checkbox" id="check-fullscreen" checked class="w-4 h-4 rounded text-med-600 focus:ring-med-400 border-slate-300">
+                <label for="check-fullscreen" class="text-xs text-slate-600 cursor-pointer">
+                  Activar pantalla completa para evitar distracciones
+                </label>
+              </div>
+
+              <!-- Botón Iniciar Evaluación (Bloqueado hasta PIN válido) -->
+              <button type="button" id="btn-start-exam" disabled
+                class="w-full mt-3 py-3 px-4 rounded-xl font-bold text-sm text-white bg-slate-300 cursor-not-allowed shadow-none transition-all duration-200 flex items-center justify-center space-x-2">
+                <span>Iniciar Evaluación</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- Píldoras informativas de seguridad -->
+          <div class="mt-5 space-y-2 text-center text-[11px] text-slate-500">
+            <p>🔒 <strong>Anti-Colusión:</strong> El carné genera una secuencia y orden de opciones único e irrepetible.</p>
+            <p>👁️ <strong>Telemetría activa:</strong> Salir de la app o cambiar de ventana acumula faltas auditadas.</p>
+          </div>
+        </div>
+      `;
+
+      // Listeners de validación del formulario
+      const nombreInput = document.getElementById('input-nombre');
+      const carnetInput = document.getElementById('input-carnet');
+      const pinInput = document.getElementById('input-pin');
+      const startBtn = document.getElementById('btn-start-exam');
+      const pinFeedback = document.getElementById('pin-feedback');
+
+      function validateLobbyForm() {
+        const nombreVal = nombreInput.value.trim();
+        const carnetVal = carnetInput.value.trim();
+        const pinVal = pinInput.value.trim();
+
+        const isPinCorrect = (pinVal === CONFIG.SESSION_PIN);
+
+        if (pinVal.length === 4) {
+          if (isPinCorrect) {
+            pinFeedback.textContent = "✓ PIN de aula verificado correctamente";
+            pinFeedback.className = "text-[11px] text-emerald-600 font-semibold text-center mt-1";
+          } else {
+            pinFeedback.textContent = "✕ PIN incorrecto. Consulta con el docente en el aula.";
+            pinFeedback.className = "text-[11px] text-rose-500 font-semibold text-center mt-1";
+          }
+        } else {
+          pinFeedback.textContent = "El docente dictará el PIN al iniciar la prueba";
+          pinFeedback.className = "text-[11px] text-slate-400 text-center mt-1";
+        }
+
+        if (nombreVal.length >= 3 && carnetVal.length >= 3 && isPinCorrect) {
+          startBtn.disabled = false;
+          startBtn.className = "w-full mt-3 py-3 px-4 rounded-xl font-bold text-sm text-white bg-med-600 hover:bg-med-700 active:scale-[0.99] shadow-md transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer";
+        } else {
+          startBtn.disabled = true;
+          startBtn.className = "w-full mt-3 py-3 px-4 rounded-xl font-bold text-sm text-white bg-slate-300 cursor-not-allowed shadow-none transition-all duration-200 flex items-center justify-center space-x-2";
+        }
+      }
+
+      nombreInput.addEventListener('input', validateLobbyForm);
+      carnetInput.addEventListener('input', validateLobbyForm);
+      pinInput.addEventListener('input', validateLobbyForm);
+
+      startBtn.addEventListener('click', () => {
+        if (startBtn.disabled) return;
+
+        APP_STATE.student.nombre = nombreInput.value.trim();
+        APP_STATE.student.carnet = carnetInput.value.trim().toUpperCase();
+        APP_STATE.student.pin = pinInput.value.trim();
+
+        // Solicitar pantalla completa opcional si está marcado
+        const wantFullscreen = document.getElementById('check-fullscreen').checked;
+        if (wantFullscreen && document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {
+            // Ignorado si el navegador móvil no lo permite
+          });
+        }
+
+        // Generar baraja pseudoaleatoria basada en el Carné
+        const seed = hashStringToSeed(APP_STATE.student.carnet);
+        const rng = createPRNG(seed);
+        APP_STATE.shuffledItems = shuffleArray(CLINICAL_ITEMS_BANK, rng);
+
+        // Barajar opciones internas si aplica
+        APP_STATE.shuffledItems.forEach(item => {
+          if (item.type === 'semaforo_evidencia' && item.intervenciones) {
+            item.intervenciones = shuffleArray(item.intervenciones, rng);
+          }
+          if (item.type === 'decision_binaria' && item.opciones) {
+            item.opciones = shuffleArray(item.opciones, rng);
+          }
+          if (item.type === 'presupuesto_restringido' && item.opciones) {
+            item.opciones = shuffleArray(item.opciones, rng);
+          }
+        });
+
+        APP_STATE.telemetry.startTime = new Date().toISOString();
+        startExamSession(false);
+      });
+    }
+
+    // --- 2. GESTOR DE ETAPAS DEL EXAMEN ---
+    function startExamSession(isResuming = false) {
+      APP_STATE.currentView = 'EXAM';
+      
+      // Mostrar badges del header
+      document.getElementById('header-student-badge').textContent = `${APP_STATE.student.nombre} (${APP_STATE.student.carnet})`;
+      document.getElementById('progress-container').classList.remove('hidden');
+      document.getElementById('incidents-badge').classList.remove('hidden');
+      document.getElementById('incidents-badge').classList.add('flex');
+      document.getElementById('incidents-count').textContent = APP_STATE.telemetry.tabSwitchesCount;
+
+      startTimer();
+      renderCurrentStage();
+      saveStateToLocalStorage();
+    }
+
+    function renderCurrentStage() {
+      const totalStages = APP_STATE.shuffledItems.length;
+      const currentIndex = APP_STATE.currentStageIndex;
+      const currentItem = APP_STATE.shuffledItems[currentIndex];
+
+      // Actualizar Barra de Progreso
+      const progressPercent = ((currentIndex) / totalStages) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+      const container = document.getElementById('app-container');
+      const isLastStage = (currentIndex === totalStages - 1);
+      const isStageLocked = !!APP_STATE.lockedStages[currentIndex];
+
+      // Construcción del contenedor de la etapa
+      container.innerHTML = `
+        <div class="flex-1 flex flex-col justify-between space-y-4 pb-20">
+          
+          <!-- Metadatos de la Etapa -->
+          <div class="bg-white rounded-2xl p-4 shadow-2xs border border-slate-200">
+            <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span class="font-bold uppercase tracking-wider text-med-700">Etapa ${currentIndex + 1} de ${totalStages}</span>
+              <span class="bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold">${currentItem.type}</span>
+            </div>
+            <h2 class="text-base font-bold text-slate-900 leading-snug">${currentItem.titulo}</h2>
+            <div class="mt-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 leading-relaxed">
+              <span class="font-semibold text-slate-800">📋 Caso: </span>${currentItem.contexto}
+            </div>
+          </div>
+
+          <!-- Renderizado del Widget Específico -->
+          <div id="widget-container" class="flex-1">
+            <!-- Dynamic Widget HTML goes here -->
+          </div>
+
+        </div>
+
+        <!-- Barra Inferior Fija de Navegación y Confirmación Gated -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 z-30 shadow-lg">
+          <div class="max-w-lg mx-auto flex items-center justify-between space-x-3">
+            <div class="text-[11px] text-slate-500 font-medium">
+              <span class="inline-block w-2 h-2 rounded-full bg-amber-400 mr-1"></span>
+              Paso bloqueante
+            </div>
+            
+            <button id="btn-next-stage" class="flex-1 max-w-[200px] py-3 px-4 rounded-xl font-bold text-sm text-white bg-med-600 active:bg-med-700 shadow-md transition-all flex items-center justify-center space-x-2">
+              <span>${isLastStage ? 'Finalizar Examen' : 'Confirmar y Avanzar'}</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Renderizar el widget específico
+      const widgetHost = document.getElementById('widget-container');
+      renderWidget(currentItem, widgetHost);
+
+      // Evento de "Confirmar y Avanzar" con Modal Gated
+      const nextBtn = document.getElementById('btn-next-stage');
+      nextBtn.addEventListener('click', () => {
+        // Validar si respondió el ítem actual
+        if (!hasAnsweredCurrentStage(currentItem)) {
+          showToast("Debes registrar tu respuesta antes de avanzar", "⚠️", 3000);
+          vibrate(50);
+          return;
+        }
+
+        // Mostrar modal de bloqueo definitivo de etapa
+        const gatedModal = document.getElementById('gated-lock-modal');
+        gatedModal.classList.remove('hidden');
+        vibrate(20);
+      });
+
+      // Configurar botones del modal de bloqueo
+      const confirmLockBtn = document.getElementById('btn-confirm-lock');
+      const cancelLockBtn = document.getElementById('btn-cancel-lock');
+
+      // Limpiar listeners antiguos clonando nodos
+      const newConfirmBtn = confirmLockBtn.cloneNode(true);
+      const newCancelBtn = cancelLockBtn.cloneNode(true);
+      confirmLockBtn.parentNode.replaceChild(newConfirmBtn, confirmLockBtn);
+      cancelLockBtn.parentNode.replaceChild(newCancelBtn, cancelLockBtn);
+
+      newCancelBtn.addEventListener('click', () => {
+        document.getElementById('gated-lock-modal').classList.add('hidden');
+      });
+
+      newConfirmBtn.addEventListener('click', () => {
+        document.getElementById('gated-lock-modal').classList.add('hidden');
+        APP_STATE.lockedStages[currentIndex] = true;
+        saveStateToLocalStorage();
+
+        if (isLastStage) {
+          finalizeEvaluation();
+        } else {
+          APP_STATE.currentStageIndex++;
+          renderCurrentStage();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+
+    // Comprueba si el estudiante ha interactuado/respondido el widget de la etapa
+    function hasAnsweredCurrentStage(item) {
+      const res = APP_STATE.responses[item.id];
+      if (!res) return false;
+
+      switch(item.type) {
+        case 'semaforo_evidencia':
+          // Al menos debe haber clasificado todas las intervenciones
+          return item.intervenciones.every(i => res[i.id] !== undefined);
+        case 'decision_binaria':
+          return res.selectedId !== undefined;
+        case 'presupuesto_restringido':
+          return Array.isArray(res.selectedIds) && res.selectedIds.length === item.max_seleccion;
+        case 'umbral_slider':
+          return res.value !== undefined;
+        case 'script_concordance':
+          return res.selectedValor !== undefined;
+        default:
+          return true;
+      }
+    }
+
+    // =========================================================================
+    // WIDGETS INTERACTIVOS DE JUICIO CLÍNICO (5 TIPOS)
+    // =========================================================================
+
+    function renderWidget(item, host) {
+      switch (item.type) {
+        case 'semaforo_evidencia':
+          renderSemaforoEvidencia(item, host);
+          break;
+        case 'decision_binaria':
+          renderDecisionBinaria(item, host);
+          break;
+        case 'presupuesto_restringido':
+          renderPresupuestoRestringido(item, host);
+          break;
+        case 'umbral_slider':
+          renderUmbralSlider(item, host);
+          break;
+        case 'script_concordance':
+          renderScriptConcordance(item, host);
+          break;
+        default:
+          host.innerHTML = `<p class="text-rose-500">Tipo de widget no soportado: ${item.type}</p>`;
+      }
+    }
+
+    // --- WIDGET 1: SEMÁFORO DE EVIDENCIA ---
+    // Clasificador táctil optimizado para smartphone (Chips directos 1-Tap por tarjeta)
+    function renderSemaforoEvidencia(item, host) {
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = {};
+      }
+      const savedAnswers = APP_STATE.responses[item.id];
+
+      let html = `
+        <div class="space-y-3">
+          <div class="bg-amber-50 border border-amber-200/70 rounded-xl p-2.5 text-[11px] text-amber-800 flex items-start space-x-2">
+            <span class="text-sm">💡</span>
+            <span>Toca una categoría para cada intervención médica. Cuidado: clasificar como <em>Fuerte</em> una práctica iatrogénica conlleva penalización.</span>
+          </div>
+
+          <div class="space-y-2.5">
+      `;
+
+      item.intervenciones.forEach((interv, idx) => {
+        const currentChoice = savedAnswers[interv.id];
+
+        html += `
+          <div class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-2xs transition-all" id="card-${interv.id}">
+            <p class="text-xs font-semibold text-slate-800 mb-2.5 leading-snug">${idx + 1}. ${interv.text}</p>
+            
+            <!-- 3 Botones Táctiles Tipo Semáforo -->
+            <div class="grid grid-cols-3 gap-1.5">
+              
+              <!-- Opción Fuerte -->
+              <button type="button" data-item="${interv.id}" data-category="fuerte"
+                class="semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                  currentChoice === 'fuerte' 
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' 
+                    : 'bg-emerald-50 text-emerald-800 border-emerald-200 active:bg-emerald-100'
+                }">
+                🟢 Fuerte
+              </button>
+
+              <!-- Opción Compartida -->
+              <button type="button" data-item="${interv.id}" data-category="selectiva"
+                class="semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                  currentChoice === 'selectiva' 
+                    ? 'bg-amber-500 text-white border-amber-500 shadow-xs' 
+                    : 'bg-amber-50 text-amber-800 border-amber-200 active:bg-amber-100'
+                }">
+                🟡 Selectiva
+              </button>
+
+              <!-- Opción Iatrogénica -->
+              <button type="button" data-item="${interv.id}" data-category="iatrogenica"
+                class="semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all ${
+                  currentChoice === 'iatrogenica' 
+                    ? 'bg-rose-600 text-white border-rose-600 shadow-xs' 
+                    : 'bg-rose-50 text-rose-800 border-rose-200 active:bg-rose-100'
+                }">
+                🔴 No recomendada
+              </button>
+
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      host.innerHTML = html;
+
+      // Eventos de selección táctil
+      host.querySelectorAll('.semaforo-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          vibrate(20);
+          const intervId = btn.dataset.item;
+          const category = btn.dataset.category;
+          
+          APP_STATE.responses[item.id][intervId] = category;
+          saveStateToLocalStorage();
+
+          // Refrescar estilos visuales de la fila
+          const parentCard = document.getElementById(`card-${intervId}`);
+          parentCard.querySelectorAll('.semaforo-btn').forEach(b => {
+            const cat = b.dataset.category;
+            if (cat === category) {
+              if (cat === 'fuerte') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-emerald-600 text-white border-emerald-600 shadow-xs";
+              if (cat === 'selectiva') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-amber-500 text-white border-amber-500 shadow-xs";
+              if (cat === 'iatrogenica') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-rose-600 text-white border-rose-600 shadow-xs";
+            } else {
+              if (cat === 'fuerte') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-emerald-50 text-emerald-800 border-emerald-200 active:bg-emerald-100";
+              if (cat === 'selectiva') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-amber-50 text-amber-800 border-amber-200 active:bg-amber-100";
+              if (cat === 'iatrogenica') b.className = "semaforo-btn py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all bg-rose-50 text-rose-800 border-rose-200 active:bg-rose-100";
+            }
+          });
+        });
+      });
+    }
+
+    // --- WIDGET 2: DECISIÓN BINARIA RÁPIDA ---
+    function renderDecisionBinaria(item, host) {
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = { selectedId: null };
+      }
+      const selectedId = APP_STATE.responses[item.id].selectedId;
+
+      let html = `
+        <div class="space-y-4 pt-2">
+          <p class="text-xs text-slate-500 text-center font-medium">Elige la conducta inmediata correspondiente:</p>
+          <div class="space-y-3">
+      `;
+
+      item.opciones.forEach((opt, idx) => {
+        const isSelected = (selectedId === opt.id);
+        const isOptA = idx === 0;
+
+        html += `
+          <button type="button" data-opt-id="${opt.id}"
+            class="decision-btn w-full p-4 rounded-2xl border-2 text-left transition-all flex items-start space-x-3 ${
+              isSelected 
+                ? 'border-med-600 bg-med-50/80 shadow-md ring-2 ring-med-300' 
+                : 'border-slate-200 bg-white hover:border-slate-300 active:bg-slate-50'
+            }">
+            
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
+              isSelected ? 'bg-med-600 text-white' : 'bg-slate-100 text-slate-700'
+            }">
+              ${isSelected ? '✓' : String.fromCharCode(65 + idx)}
+            </div>
+
+            <div class="flex-1">
+              <span class="block text-sm font-bold text-slate-900 leading-tight mb-1">${opt.label}</span>
+              <span class="block text-xs text-slate-600 leading-relaxed">${opt.desc}</span>
+            </div>
+          </button>
+        `;
+      });
+
+      html += `</div></div>`;
+      host.innerHTML = html;
+
+      host.querySelectorAll('.decision-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          vibrate(25);
+          const optId = btn.dataset.optId;
+          APP_STATE.responses[item.id].selectedId = optId;
+          saveStateToLocalStorage();
+          renderDecisionBinaria(item, host); // Re-render rápido
+        });
+      });
+    }
+
+    // --- WIDGET 3: PRESUPUESTO RESTRINGIDO (PICK-N) ---
+    function renderPresupuestoRestringido(item, host) {
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = { selectedIds: [] };
+      }
+      const selectedList = APP_STATE.responses[item.id].selectedIds || [];
+      const remainingSlots = item.max_seleccion - selectedList.length;
+
+      let html = `
+        <div class="space-y-3">
+          <!-- Banner de Presupuesto Táctil -->
+          <div class="flex items-center justify-between p-3 rounded-xl border ${
+            remainingSlots === 0 
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+              : 'bg-sky-50 border-sky-200 text-sky-800'
+          }">
+            <div class="text-xs font-semibold">
+              ${remainingSlots === 0 
+                ? '✓ Presupuesto completado (2 de 2)' 
+                : `Cupo restante: exactamente ${remainingSlots} estudio(s)`}
+            </div>
+            <div class="text-xs font-mono font-bold bg-white px-2 py-0.5 rounded-lg border border-current shadow-2xs">
+              ${selectedList.length} / ${item.max_seleccion}
+            </div>
+          </div>
+
+          <!-- Lista de estudios -->
+          <div class="space-y-2" id="budget-items-list">
+      `;
+
+      item.opciones.forEach((opt) => {
+        const isChecked = selectedList.includes(opt.id);
+
+        html += `
+          <div data-opt-id="${opt.id}"
+            class="budget-option-card p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+              isChecked 
+                ? 'bg-med-50/90 border-med-500 text-med-950 shadow-2xs' 
+                : 'bg-white border-slate-200 text-slate-800 active:bg-slate-50'
+            }">
+            
+            <div class="flex items-center space-x-3 pr-2">
+              <div class="w-5 h-5 rounded-md border flex items-center justify-center font-bold text-xs ${
+                isChecked ? 'bg-med-600 border-med-600 text-white' : 'border-slate-300 bg-white'
+              }">
+                ${isChecked ? '✓' : ''}
+              </div>
+              <span class="text-xs font-medium leading-snug">${opt.text}</span>
+            </div>
+
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md ${
+              isChecked ? 'bg-med-200/60 text-med-800' : 'bg-slate-100 text-slate-500'
+            }">
+              ${isChecked ? 'Seleccionado' : 'Disponible'}
+            </span>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      host.innerHTML = html;
+
+      // Eventos de click/tap con bloqueo estricto Pick-N
+      host.querySelectorAll('.budget-option-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const optId = card.dataset.optId;
+          const currentArr = APP_STATE.responses[item.id].selectedIds;
+          const index = currentArr.indexOf(optId);
+
+          if (index > -1) {
+            // Desmarcar
+            vibrate(15);
+            currentArr.splice(index, 1);
+            saveStateToLocalStorage();
+            renderPresupuestoRestringido(item, host);
+          } else {
+            // Intentar marcar
+            if (currentArr.length >= item.max_seleccion) {
+              // BLOQUEO ESTRICTO CON FEEDBACK VISUAL Y HÁPTICO
+              vibrate([60, 40, 60]);
+              showToast(`Límite alcanzado: Desmarca un estudio antes de elegir otro`, "🚫", 3000);
+              card.classList.add('animate-shake', 'border-rose-400');
+              setTimeout(() => card.classList.remove('animate-shake', 'border-rose-400'), 500);
+            } else {
+              vibrate(25);
+              currentArr.push(optId);
+              saveStateToLocalStorage();
+              renderPresupuestoRestringido(item, host);
+            }
+          }
+        });
+      });
+    }
+
+    // --- WIDGET 4: UMBRAL CLÍNICO CON SLIDER TÁCTIL ---
+    function renderUmbralSlider(item, host) {
+      const cfg = item.slider_config;
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = { value: cfg.defecto };
+      }
+      const currentValue = APP_STATE.responses[item.id].value;
+
+      host.innerHTML = `
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-6">
+          <div class="text-center">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Valor Seleccionado</span>
+            <div class="inline-flex items-baseline space-x-1.5 bg-slate-900 text-white px-5 py-2.5 rounded-2xl shadow-sm">
+              <span id="slider-live-value" class="text-3xl font-extrabold font-mono tracking-tight text-med-400">${currentValue}</span>
+              <span class="text-sm font-semibold text-slate-300">${cfg.unidad}</span>
+            </div>
+          </div>
+
+          <!-- Slider Interactivo -->
+          <div class="px-2 space-y-3">
+            <input type="range" id="clinical-slider"
+              min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${currentValue}"
+              class="w-full">
+            
+            <div class="flex justify-between text-[11px] font-mono text-slate-400">
+              <span>${cfg.min} ${cfg.unidad}</span>
+              <span class="font-bold text-slate-500">Desliza para ajustar</span>
+              <span>${cfg.max} ${cfg.unidad}</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 text-center">
+            <p class="text-xs text-slate-600">
+              Fija el umbral exacto que recomiendan las directrices para iniciar cribado de DM2 en población asintomática.
+            </p>
+          </div>
+        </div>
+      `;
+
+      const slider = document.getElementById('clinical-slider');
+      const liveVal = document.getElementById('slider-live-value');
+
+      slider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        liveVal.textContent = val;
+        APP_STATE.responses[item.id].value = val;
+      });
+
+      slider.addEventListener('change', () => {
+        vibrate(20);
+        saveStateToLocalStorage();
+      });
+    }
+
+    // --- WIDGET 5: SCRIPT CONCORDANCE TEST (SCT - 1 TAP LIKERT) ---
+    function renderScriptConcordance(item, host) {
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = { selectedValor: null };
+      }
+      const selectedValor = APP_STATE.responses[item.id].selectedValor;
+
+      let html = `
+        <div class="space-y-4">
+          <!-- Tarjeta de Hipótesis vs Nuevo Hallazgo -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+            <div class="p-3 rounded-xl bg-sky-50/80 border border-sky-100">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 block mb-0.5">💡 Hipótesis Inicial:</span>
+              <p class="text-xs font-semibold text-slate-900">${item.hipotesis_inicial}</p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-amber-50/80 border border-amber-100">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 block mb-0.5">🔍 Nuevo Dato Clínico:</span>
+              <p class="text-xs font-semibold text-slate-900">${item.nuevo_hallazgo}</p>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-600 text-center font-medium">¿Cómo afecta este nuevo dato a la probabilidad de la hipótesis?</p>
+
+          <!-- Fila de 5 Botones Táctiles SCT Likert -->
+          <div class="grid grid-cols-5 gap-1.5" id="sct-buttons-row">
+      `;
+
+      item.escala_sct.forEach(opt => {
+        const isChosen = (selectedValor === opt.valor);
+        
+        // Colores según dirección del juicio clínico
+        let colorClasses = "bg-white border-slate-200 text-slate-800";
+        if (isChosen) {
+          if (opt.valor < 0) colorClasses = "bg-rose-600 border-rose-600 text-white shadow-sm ring-2 ring-rose-200";
+          else if (opt.valor === 0) colorClasses = "bg-slate-700 border-slate-700 text-white shadow-sm ring-2 ring-slate-300";
+          else colorClasses = "bg-emerald-600 border-emerald-600 text-white shadow-sm ring-2 ring-emerald-200";
+        }
+
+        html += `
+          <button type="button" data-val="${opt.valor}"
+            class="sct-tap-btn py-3 px-1 rounded-xl border text-center transition-all flex flex-col items-center justify-between ${colorClasses} active:scale-95">
+            <span class="text-sm font-extrabold font-mono">${opt.label}</span>
+            <span class="text-[9px] font-medium leading-tight mt-1 line-clamp-2">${opt.desc}</span>
+          </button>
+        `;
+      });
+
+      html += `</div></div>`;
+      host.innerHTML = html;
+
+      host.querySelectorAll('.sct-tap-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          vibrate(25);
+          const val = parseInt(btn.dataset.val, 10);
+          APP_STATE.responses[item.id].selectedValor = val;
+          saveStateToLocalStorage();
+          renderScriptConcordance(item, host);
+        });
+      });
+    }
+
+    // =========================================================================
+    // MOTOR DE EVALUACIÓN MATEMÁTICA Y ENTREGA OFFLINE-FIRST
+    // =========================================================================
+
+    function calculateFinalGrade() {
+      let totalRawScore = 0;
+      let maxPossibleScore = 0;
+      const breakdown = {};
+
+      APP_STATE.shuffledItems.forEach(item => {
+        const res = APP_STATE.responses[item.id] || {};
+
+        switch (item.type) {
+          case 'semaforo_evidencia': {
+            // Cada acierto suma puntos_acierto (ej: 2)
+            // Error iatrogénico grave resta penalizacion_iatrogenica (ej: 3)
+            let itemScore = 0;
+            const itemMax = item.intervenciones.length * item.puntos_acierto;
+            maxPossibleScore += itemMax;
+
+            item.intervenciones.forEach(interv => {
+              const studentChoice = res[interv.id];
+              if (studentChoice === interv.correct) {
+                itemScore += item.puntos_acierto;
+              } else if (interv.correct === 'iatrogenica' && studentChoice === 'fuerte') {
+                // Penalización por recomendación iatrogénica
+                itemScore -= item.penalizacion_iatrogenica;
+              }
+            });
+            itemScore = Math.max(0, itemScore); // Nunca negativo
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
+            break;
+          }
+
+          case 'decision_binaria': {
+            const itemMax = 10;
+            maxPossibleScore += itemMax;
+            const chosen = item.opciones.find(o => o.id === res.selectedId);
+            const isCorrect = chosen && chosen.es_correcta;
+            const itemScore = isCorrect ? itemMax : 0;
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
+            break;
+          }
+
+          case 'presupuesto_restringido': {
+            const itemMax = 10;
+            maxPossibleScore += itemMax;
+            let itemScore = 0;
+            const selected = res.selectedIds || [];
+            
+            selected.forEach(optId => {
+              const opt = item.opciones.find(o => o.id === optId);
+              if (opt && opt.es_optima) itemScore += item.ponderacion.acierto;
+              else itemScore += item.ponderacion.error;
+            });
+            itemScore = Math.max(0, itemScore);
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
+            break;
+          }
+
+          case 'umbral_slider': {
+            const itemMax = 10;
+            maxPossibleScore += itemMax;
+            const cfg = item.slider_config;
+            const val = res.value !== undefined ? res.value : cfg.defecto;
+            const diff = Math.abs(val - cfg.valor_objetivo);
+
+            let itemScore = 0;
+            if (diff <= cfg.margen_tolerancia) {
+              itemScore = itemMax; // Acierto exacto
+            } else if (diff <= cfg.margen_parcial) {
+              itemScore = itemMax * 0.5; // Crédito parcial
+            } else {
+              itemScore = 0;
+            }
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, valor_reportado: val };
+            break;
+          }
+
+          case 'script_concordance': {
+            const itemMax = 10;
+            maxPossibleScore += itemMax;
+            const val = res.selectedValor;
+            const opt = item.escala_sct.find(o => o.valor === val);
+            const peso = opt ? opt.peso : 0;
+            const itemScore = itemMax * peso;
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, peso_experto: peso };
+            break;
+          }
+        }
+      });
+
+      // Escalar matemáticamente a escala 0.0 - 10.0
+      let nota10 = 0;
+      if (maxPossibleScore > 0) {
+        nota10 = (totalRawScore / maxPossibleScore) * CONFIG.MAX_GRADE;
+      }
+      nota10 = Math.round(nota10 * 100) / 100; // 2 decimales
+
+      return {
+        notaFinal: Math.min(CONFIG.MAX_GRADE, Math.max(0, nota10)),
+        totalRawScore,
+        maxPossibleScore,
+        breakdown
+      };
+    }
+
+    async function finalizeEvaluation() {
+      clearInterval(APP_STATE.timerInterval);
+      APP_STATE.telemetry.endTime = new Date().toISOString();
+
+      const evaluation = calculateFinalGrade();
+
+      // Construcción del Payload Oficial
+      const payload = {
+        carnet: APP_STATE.student.carnet,
+        nombre: APP_STATE.student.nombre,
+        nota_final: evaluation.notaFinal,
+        tiempo_empleado_segundos: APP_STATE.telemetry.totalDurationSeconds,
+        cambios_de_pestana: APP_STATE.telemetry.tabSwitchesCount,
+        token_seguridad: '', // Se calculará a continuación
+        respuestas_detalle: {
+          desglose_calificacion: evaluation.breakdown,
+          telemetria_cambios: APP_STATE.telemetry.tabSwitchLogs,
+          tiempos_por_etapa: APP_STATE.telemetry.stageTimeSpent,
+          respuestas_brutas: APP_STATE.responses
+        }
+      };
+
+      // Generar token hash de seguridad
+      payload.token_seguridad = await generateSecurityToken(payload);
+
+      APP_STATE.submissionReceipt = payload;
+      APP_STATE.currentView = 'COMPLETED';
+      saveStateToLocalStorage();
+
+      // Transición inmediata a pantalla de resultados y despacho de red
+      renderResultsView();
+      dispatchPayload(payload);
+    }
+
+    // Despacho a Google Apps Script Webhook
+    async function dispatchPayload(payload) {
+      const syncStatusEl = document.getElementById('sync-status-indicator');
+      const syncMsgEl = document.getElementById('sync-status-text');
+
+      if (!navigator.onLine) {
+        if (syncStatusEl && syncMsgEl) {
+          syncStatusEl.className = "p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center space-x-2";
+          syncMsgEl.textContent = "Dispositivo sin conexión a internet. El comprobante está respaldado en tu teléfono y listo para ser escaneado por el docente.";
+        }
+        return;
+      }
+
+      try {
+        if (syncMsgEl) syncMsgEl.textContent = "Enviando respuestas al servidor de Google Sheets...";
+
+        // Usamos mode: 'no-cors' si el webhook de Apps Script no tiene CORS headers habilitados,
+        // o POST normal con JSON
+        const response = await fetch(CONFIG.WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Previene bloqueo de preflight con Google Apps Script
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (syncStatusEl && syncMsgEl) {
+          syncStatusEl.className = "p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center space-x-2";
+          syncMsgEl.textContent = "✓ Respuestas registradas y confirmadas en el libro oficial de calificaciones.";
+        }
+      } catch (err) {
+        console.warn("Fallo en envío de red a Webhook:", err);
+        if (syncStatusEl && syncMsgEl) {
+          syncStatusEl.className = "p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center space-x-2";
+          syncMsgEl.textContent = "Fallo de enlace con Google Sheets. Tu examen está a salvo localmente. Muestra este comprobante al docente.";
+        }
+      }
+    }
+
+    // --- 3. VISTA DE RESULTADOS Y COMPROBANTE OFFLINE-FIRST ---
+    function renderResultsView() {
+      // Ocultar barra superior durante resultados
+      document.getElementById('timer-badge').classList.add('hidden');
+      document.getElementById('progress-container').classList.add('hidden');
+
+      const receipt = APP_STATE.submissionReceipt;
+      const container = document.getElementById('app-container');
+      const isApproved = receipt.nota_final >= CONFIG.PASSING_GRADE;
+
+      // Minutos y segundos empleados
+      const mins = Math.floor(receipt.tiempo_empleado_segundos / 60);
+      const secs = receipt.tiempo_empleado_segundos % 60;
+
+      container.innerHTML = `
+        <div class="flex-1 flex flex-col justify-start py-4 space-y-4">
+          
+          <!-- Card de Calificación Final -->
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 text-center">
+            
+            <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 ${
+              isApproved ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
+            }">
+              ${isApproved ? '🏆' : '📝'}
+            </div>
+
+            <h2 class="text-lg font-bold text-slate-900">Evaluación Finalizada</h2>
+            <p class="text-xs text-slate-500 font-medium">${receipt.nombre} &bull; ${receipt.carnet}</p>
+
+            <!-- Nota Grande -->
+            <div class="my-5">
+              <span class="text-5xl font-black font-mono tracking-tight ${
+                isApproved ? 'text-emerald-600' : 'text-rose-600'
+              }">
+                ${receipt.nota_final.toFixed(2)}
+              </span>
+              <span class="text-slate-400 font-semibold text-lg"> / 10.0</span>
+              <div class="mt-1">
+                <span class="inline-block text-xs font-bold px-3 py-1 rounded-full ${
+                  isApproved ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                }">
+                  ${isApproved ? 'Aprobado' : 'No Acreditado'}
+                </span>
+              </div>
+            </div>
+
+            <!-- Resumen Métrico -->
+            <div class="grid grid-cols-2 gap-2 text-left bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs">
+              <div>
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Tiempo Empleado</span>
+                <span class="font-mono font-bold text-slate-800">${mins}m ${secs}s</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Desvíos de Pestaña</span>
+                <span class="font-mono font-bold ${receipt.cambios_de_pestana > 0 ? 'text-rose-600' : 'text-emerald-700'}">
+                  ${receipt.cambios_de_pestana} incidencia(s)
+                </span>
+              </div>
+            </div>
+
+            <!-- Token de Seguridad Único -->
+            <div class="mt-4 pt-4 border-t border-slate-100 text-left">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Firma Criptográfica / Hash Anti-Fraude:</span>
+              <div class="p-2 rounded-lg bg-slate-950 font-mono text-[11px] text-emerald-400 break-all select-all">
+                ${receipt.token_seguridad}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Estado de Sincronización con Google Sheets -->
+          <div id="sync-status-indicator" class="p-3 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 text-xs flex items-center space-x-2">
+            <span class="animate-spin text-sm">🔄</span>
+            <span id="sync-status-text">Verificando sincronización con Google Sheets...</span>
+          </div>
+
+          <!-- Respaldo Offline y QR de Emergencia -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Mecanismos de Respaldo Docente</h3>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              Si el aula se queda sin conexión WiFi o datos celulares, puedes mostrar este código QR al docente o copiar el comprobante cifrado para entrega directa.
+            </p>
+
+            <!-- Botón Generar / Ver QR -->
+            <button id="btn-toggle-qr" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-xs">
+              <svg class="w-4 h-4 text-med-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+              <span>Generar Código QR de Entrega (Respaldo Aula)</span>
+            </button>
+
+            <!-- Contenedor del Código QR -->
+            <div id="qr-container-box" class="hidden flex-col items-center justify-center p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-2">
+              <p class="text-[11px] font-semibold text-slate-800">Escaneo Docente Presencial (Cero Datos/WiFi)</p>
+              <div id="qrcode" class="p-2.5 bg-white rounded-xl shadow-xs border border-slate-200 inline-block"></div>
+              <span class="text-[10px] font-mono text-slate-500 block">Firma: ${receipt.token_seguridad.substring(0, 16)}...</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button id="btn-copy-receipt" class="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-semibold text-xs transition-colors flex items-center justify-center space-x-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                <span>Copiar Datos</span>
+              </button>
+
+              <button id="btn-download-receipt" class="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-semibold text-xs transition-colors flex items-center justify-center space-x-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span>Descargar JSON</span>
+              </button>
+            </div>
+
+            <!-- Botón Reintentar Envío Manual -->
+            <button id="btn-retry-sync" class="w-full py-2.5 px-3 rounded-xl bg-med-50 text-med-700 hover:bg-med-100 font-bold text-xs border border-med-200 transition-colors">
+              Reintentar Envío al Webhook de Google Sheets
+            </button>
+          </div>
+
+        </div>
+      `;
+
+      // Eventos de botones de comprobante
+      const btnToggleQr = document.getElementById('btn-toggle-qr');
+      const qrBox = document.getElementById('qr-container-box');
+      let qrRendered = false;
+
+      btnToggleQr.addEventListener('click', () => {
+        if (qrBox.classList.contains('hidden')) {
+          qrBox.classList.remove('hidden');
+          qrBox.classList.add('flex');
+          if (!qrRendered && typeof QRCode !== 'undefined') {
+            const qrPayload = JSON.stringify({
+              c: receipt.carnet,
+              n: receipt.nombre,
+              g: receipt.nota_final,
+              t: receipt.tiempo_empleado_segundos,
+              s: receipt.cambios_de_pestana,
+              h: receipt.token_seguridad
+            });
+            new QRCode(document.getElementById("qrcode"), {
+              text: qrPayload,
+              width: 180,
+              height: 180,
+              colorDark: "#0f172a",
+              colorLight: "#ffffff",
+              correctLevel: QRCode.CorrectLevel.M
+            });
+            qrRendered = true;
+          }
+        } else {
+          qrBox.classList.add('hidden');
+          qrBox.classList.remove('flex');
+        }
+      });
+
+      document.getElementById('btn-copy-receipt').addEventListener('click', () => {
+        navigator.clipboard.writeText(JSON.stringify(receipt, null, 2)).then(() => {
+          showToast("Comprobante copiado al portapapeles", "📋", 3000);
+        }).catch(() => {
+          showToast("No se pudo copiar automáticamente", "⚠️");
+        });
+      });
+
+      document.getElementById('btn-download-receipt').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(receipt, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Comprobante_${receipt.carnet}_${CONFIG.EXAM_CODE}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Descarga de comprobante iniciada", "💾", 3000);
+      });
+
+      document.getElementById('btn-retry-sync').addEventListener('click', () => {
+        dispatchPayload(receipt);
+      });
+    }
+
+    // =========================================================================
+    // INICIALIZACIÓN DE LA APLICACIÓN
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      initSecurityListeners();
+
+      // Registrar Service Worker para PWA Offline si está disponible
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log("Service Worker registrado con éxito para offline caching", reg.scope);
+        }).catch(err => {
+          console.log("Service Worker omitido o en contexto local", err);
+        });
+      }
+
+      // Intentar restaurar sesión activa de localStorage
+      const restored = tryRestoreSession();
+      if (!restored) {
+        renderLobbyView();
+      }
+    });
+
+  </script>
+</body>
+</html>
