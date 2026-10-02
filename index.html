@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="Evaluación de Juicio Clínico en Medicina Familiar - PWA Offline-First">
-  <title>MedEval PWA - Juicio Clínico Familiar</title>
+  <title>Segundo Examen Parcial de Medicina Familiar</title>
 
   <!-- PWA Manifest Link -->
   <link rel="manifest" href="manifest.json">
@@ -105,7 +105,7 @@
         ⚕
       </div>
       <div>
-        <h1 class="text-sm font-bold text-slate-900 leading-tight">MedEval Clinical</h1>
+        <h1 class="text-sm font-bold text-slate-900 leading-tight">Segundo Parcial</h1>
         <p id="header-student-badge" class="text-[11px] text-slate-500 font-medium truncate max-w-[150px]">Medicina Familiar</p>
       </div>
     </div>
@@ -206,10 +206,10 @@
 
     // --- CONFIGURATION & CONSTANTS ---
     const CONFIG = {
-      EXAM_TITLE: "Evaluación Práctica: Medicina Familiar y Comunitaria",
-      EXAM_CODE: "MF-2026-P1",
+      EXAM_TITLE: "Segundo examen parcial de Medicina Familiar",
+      EXAM_CODE: "MF-2026-P2",
       SESSION_PIN: "2026", // PIN de 4 dígitos para sincronización simultánea
-      EXAM_DURATION_MINUTES: 30, // Tiempo total calculado para 20 preguntas (1.5 min por caso)
+      EXAM_DURATION_MINUTES: 30, // Tiempo total calibrado para 15 casos clínicos (2 min por caso)
       WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzxtS26_PqR-ONHTWL6qEYEhHQOUwBNc4-YGhLGpzE3pwELqiE8yLbkHqyT0OfCmdLCkw/exec",
       SALT_INTEGRITY: "MEDEVAL-FAMILIAR-HASH-2026-SECURE",
       PASSING_GRADE: 6.0,
@@ -775,7 +775,41 @@
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
               </div>
               <h2 class="text-xl font-bold text-slate-900">${CONFIG.EXAM_TITLE}</h2>
-              <p class="text-xs text-slate-500 mt-1 font-mono">${CONFIG.EXAM_CODE} &bull; Duración: ${CONFIG.EXAM_DURATION_MINUTES} min</p>
+              <p class="text-xs text-slate-500 mt-1 font-mono">${CONFIG.EXAM_CODE} &bull; 15 Casos Clínicos &bull; ${CONFIG.EXAM_DURATION_MINUTES} min</p>
+            </div>
+
+            <!-- Bloque de Indicaciones Oficiales del Examen -->
+            <div class="mb-5 p-4 rounded-xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 space-y-2.5">
+              <div class="flex items-center space-x-1.5 text-med-800 font-bold uppercase tracking-wider text-[11px]">
+                <svg class="w-4 h-4 text-med-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                <span>Indicaciones del Examen</span>
+              </div>
+              <ul class="space-y-1.5 text-[11px] leading-relaxed text-slate-600">
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-med-600 font-bold">•</span>
+                  <span><strong>Estructura del Parcial:</strong> La prueba consta de <strong>15 reactivos de juicio clínico</strong> basados en los protocolos oficiales del temario. Tu número de carné baraja aleatoriamente los casos y distractores.</span>
+                </li>
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-med-600 font-bold">•</span>
+                  <span><strong>Calificación en Escala 0.0 - 10.0:</strong> La nota final se calcula en base a los 15 ítems (mínima aprobatoria: <strong>6.0</strong>). Cada reactivo tiene el mismo valor ponderado.</span>
+                </li>
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-med-600 font-bold">•</span>
+                  <span><strong>Navegación Secuencial y Sellado:</strong> Cada caso debe responderse y confirmarse. Al presionar <em>«Confirmar y Avanzar»</em>, la etapa queda <strong>sellada definitivamente</strong> sin opción a retroceso ni modificación.</span>
+                </li>
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-med-600 font-bold">•</span>
+                  <span><strong>Tiempo Límite:</strong> Dispones de <strong>${CONFIG.EXAM_DURATION_MINUTES} minutos</strong>. Al llegar a cero, el sistema cerrará el examen y enviará automáticamente las respuestas registradas.</span>
+                </li>
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-rose-600 font-bold">•</span>
+                  <span><strong>Seguridad y Telemetría:</strong> Mantén la aplicación en pantalla activa. Cambiar de ventana o minimizar el navegador registrará <strong>incidencias disciplinarias</strong> auditadas por el docente.</span>
+                </li>
+                <li class="flex items-start space-x-1.5">
+                  <span class="text-emerald-600 font-bold">•</span>
+                  <span><strong>Resultados Inmediatos:</strong> Al finalizar obtendrás tu nota oficial, el desglose de aciertos con justificación clínica formativa y tu comprobante firmado con código QR.</span>
+                </li>
+              </ul>
             </div>
 
             <!-- Formulario de Ingreso -->
@@ -1500,6 +1534,7 @@
     function calculateFinalGrade() {
       let totalRawScore = 0;
       let maxPossibleScore = 0;
+      let totalCorrectCount = 0;
       const breakdown = {};
 
       APP_STATE.shuffledItems.forEach(item => {
@@ -1507,95 +1542,57 @@
 
         switch (item.type) {
           case 'seleccion_multiple': {
-            const itemMax = item.puntos || 10;
+            const itemMax = item.puntos || 1;
             maxPossibleScore += itemMax;
             const chosen = item.opciones.find(o => o.id === res.selectedId);
-            const isCorrect = chosen && chosen.es_correcta;
+            const isCorrect = !!(chosen && chosen.es_correcta);
             const itemScore = isCorrect ? itemMax : 0;
             totalRawScore += itemScore;
+            if (isCorrect) totalCorrectCount++;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, correcto: isCorrect };
+            break;
+          }
+
+          case 'decision_binaria': {
+            const itemMax = item.puntos || 1;
+            maxPossibleScore += itemMax;
+            const chosen = item.opciones.find(o => o.id === res.selectedId);
+            const isCorrect = !!(chosen && chosen.es_correcta);
+            const itemScore = isCorrect ? itemMax : 0;
+            totalRawScore += itemScore;
+            if (isCorrect) totalCorrectCount++;
             breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, correcto: isCorrect };
             break;
           }
 
           case 'semaforo_evidencia': {
-            // Cada acierto suma puntos_acierto (ej: 2)
-            // Error iatrogénico grave resta penalizacion_iatrogenica (ej: 3)
             let itemScore = 0;
-            const itemMax = item.intervenciones.length * item.puntos_acierto;
+            const itemMax = item.intervenciones.length * (item.puntos_acierto || 1);
             maxPossibleScore += itemMax;
 
+            let allOk = true;
             item.intervenciones.forEach(interv => {
               const studentChoice = res[interv.id];
               if (studentChoice === interv.correct) {
-                itemScore += item.puntos_acierto;
-              } else if (interv.correct === 'iatrogenica' && studentChoice === 'fuerte') {
-                // Penalización por recomendación iatrogénica
-                itemScore -= item.penalizacion_iatrogenica;
+                itemScore += (item.puntos_acierto || 1);
+              } else {
+                allOk = false;
+                if (interv.correct === 'iatrogenica' && studentChoice === 'fuerte') {
+                  itemScore -= (item.penalizacion_iatrogenica || 1);
+                }
               }
-            });
-            itemScore = Math.max(0, itemScore); // Nunca negativo
-            totalRawScore += itemScore;
-            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
-            break;
-          }
-
-          case 'decision_binaria': {
-            const itemMax = 10;
-            maxPossibleScore += itemMax;
-            const chosen = item.opciones.find(o => o.id === res.selectedId);
-            const isCorrect = chosen && chosen.es_correcta;
-            const itemScore = isCorrect ? itemMax : 0;
-            totalRawScore += itemScore;
-            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
-            break;
-          }
-
-          case 'presupuesto_restringido': {
-            const itemMax = 10;
-            maxPossibleScore += itemMax;
-            let itemScore = 0;
-            const selected = res.selectedIds || [];
-            
-            selected.forEach(optId => {
-              const opt = item.opciones.find(o => o.id === optId);
-              if (opt && opt.es_optima) itemScore += item.ponderacion.acierto;
-              else itemScore += item.ponderacion.error;
             });
             itemScore = Math.max(0, itemScore);
             totalRawScore += itemScore;
-            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax };
+            if (allOk) totalCorrectCount++;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, correcto: allOk };
             break;
           }
 
-          case 'umbral_slider': {
-            const itemMax = 10;
+          default: {
+            const itemMax = item.puntos || 1;
             maxPossibleScore += itemMax;
-            const cfg = item.slider_config;
-            const val = res.value !== undefined ? res.value : cfg.defecto;
-            const diff = Math.abs(val - cfg.valor_objetivo);
-
-            let itemScore = 0;
-            if (diff <= cfg.margen_tolerancia) {
-              itemScore = itemMax; // Acierto exacto
-            } else if (diff <= cfg.margen_parcial) {
-              itemScore = itemMax * 0.5; // Crédito parcial
-            } else {
-              itemScore = 0;
-            }
-            totalRawScore += itemScore;
-            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, valor_reportado: val };
-            break;
-          }
-
-          case 'script_concordance': {
-            const itemMax = 10;
-            maxPossibleScore += itemMax;
-            const val = res.selectedValor;
-            const opt = item.escala_sct.find(o => o.valor === val);
-            const peso = opt ? opt.peso : 0;
-            const itemScore = itemMax * peso;
-            totalRawScore += itemScore;
-            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, peso_experto: peso };
+            breakdown[item.id] = { obtenido: 0, maximo: itemMax, correcto: false };
             break;
           }
         }
@@ -1612,6 +1609,8 @@
         notaFinal: Math.min(CONFIG.MAX_GRADE, Math.max(0, nota10)),
         totalRawScore,
         maxPossibleScore,
+        totalCorrectCount,
+        totalItemsCount: APP_STATE.shuffledItems.length,
         breakdown
       };
     }
@@ -1627,6 +1626,8 @@
         carnet: APP_STATE.student.carnet,
         nombre: APP_STATE.student.nombre,
         nota_final: evaluation.notaFinal,
+        aciertos: evaluation.totalCorrectCount,
+        total_preguntas: evaluation.totalItemsCount,
         tiempo_empleado_segundos: APP_STATE.telemetry.totalDurationSeconds,
         cambios_de_pestana: APP_STATE.telemetry.tabSwitchesCount,
         token_seguridad: '', // Se calculará a continuación
@@ -1876,15 +1877,19 @@
             </div>
 
             <!-- Resumen Métrico -->
-            <div class="grid grid-cols-2 gap-2 text-left bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs">
+            <div class="grid grid-cols-3 gap-2 text-left bg-slate-50 p-3 rounded-2xl border border-slate-200/80 text-xs">
               <div>
-                <span class="text-slate-400 block text-[10px] uppercase font-bold">Tiempo Empleado</span>
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Aciertos</span>
+                <span class="font-mono font-bold text-slate-800">${receipt.aciertos !== undefined ? receipt.aciertos : '-'} / ${receipt.total_preguntas || 15}</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Tiempo</span>
                 <span class="font-mono font-bold text-slate-800">${mins}m ${secs}s</span>
               </div>
               <div>
-                <span class="text-slate-400 block text-[10px] uppercase font-bold">Desvíos de Pestaña</span>
+                <span class="text-slate-400 block text-[10px] uppercase font-bold">Incidencias</span>
                 <span class="font-mono font-bold ${receipt.cambios_de_pestana > 0 ? 'text-rose-600' : 'text-emerald-700'}">
-                  ${receipt.cambios_de_pestana} incidencia(s)
+                  ${receipt.cambios_de_pestana}
                 </span>
               </div>
             </div>
