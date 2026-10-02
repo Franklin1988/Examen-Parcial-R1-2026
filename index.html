@@ -217,82 +217,8 @@
     };
 
     // --- CLINICAL QUESTION BANK (JSON SCHEMA) ---
-    // Incluye los 5 tipos de widgets interactivos requeridos
-    const CLINICAL_ITEMS_BANK = [
-      {
-        id: "ITEM-01",
-        type: "semaforo_evidencia",
-        titulo: "Actividades Preventivas en Adulto Mayor (72 años)",
-        contexto: "Varón de 72 años, asintomático, exfumador hace 15 años, acude a control de salud en Atención Primaria. Clasifique las siguientes intervenciones según la evidencia clínica actual (USPSTF / PAPPS).",
-        intervenciones: [
-          { id: "i1", text: "Vacunación antigripal anual y antineumocócica conjugada", correct: "fuerte" },
-          { id: "i2", text: "Determinación seriada de PSA sin sintomatología urinaria", correct: "iatrogenica" },
-          { id: "i3", text: "Cribado de Cáncer Colorrectal hasta los 75 años (FIT anual)", correct: "fuerte" },
-          { id: "i4", text: "Densitometría ósea de rutina en varón asintomático sin factores de riesgo", correct: "selectiva" },
-          { id: "i5", text: "Prescripción de Ácido Acetilsalicílico 100 mg para prevención cardiovascular primaria", correct: "iatrogenica" }
-        ],
-        puntos_acierto: 2,
-        penalizacion_iatrogenica: 3 // Penaliza severamente recomendar una práctica no indicada
-      },
-      {
-        id: "ITEM-02",
-        type: "decision_binaria",
-        titulo: "Toma de Decisión Rápida: Oportunidad Vacunal",
-        contexto: "Lactante de 12 meses traído por su madre para vacunación (SRP + Meningococo C). Al examen: T° axilar 37.4°C, rinorrea hialina leve, activo, hidratado y alimentándose con normalidad. ¿Cuál es la conducta inmediata?",
-        opciones: [
-          { id: "opt-proceder", label: "PROCEDER CON VACUNACIÓN", desc: "La febrícula y catarro de vías altas leve no constituyen contraindicación.", es_correcta: true },
-          { id: "opt-diferir", label: "DIFERIR / CONTRAINDICAR", desc: "Citar en 7 días tras resolución completa del cuadro catarral.", es_correcta: false }
-        ],
-        retroalimentacion_rapida: "Falsa contraindicación vacunal: diferir vacunas por cuadros catarrales leves genera oportunidades perdidas de inmunización."
-      },
-      {
-        id: "ITEM-03",
-        type: "presupuesto_restringido",
-        titulo: "Uso Racional de Recursos: Dispepsia no Investigada",
-        contexto: "Mujer de 38 años, sin antecedentes relevantes, consulta por epigastralgia urente de 2 meses de evolución. Sin signos de alarma (no disfagia, no pérdida de peso, no sangrado). Alta prevalencia de H. pylori en la comunidad. Dispone de un presupuesto estricto: Seleccione EXACTAMENTE 2 estudios iniciales pertinentes.",
-        max_seleccion: 2,
-        opciones: [
-          { id: "p1", text: "Test del aliento con 13C-urea (o antígeno fecal para H. pylori)", es_optima: true },
-          { id: "p2", text: "Endoscopia digestiva alta urgente", es_optima: false },
-          { id: "p3", text: "Hemograma completo", es_optima: true },
-          { id: "p4", text: "Ecografía abdominal total", es_optima: false },
-          { id: "p5", text: "Tránsito esofagogastroduodenal baritado", es_optima: false }
-        ],
-        ponderacion: { acierto: 5, error: -2 }
-      },
-      {
-        id: "ITEM-04",
-        type: "umbral_slider",
-        titulo: "Umbral Clínico de Cribado: Diabetes Mellitus Tipo 2",
-        contexto: "Según las guías ADA y recomendaciones de Medicina Familiar para cribado poblacional universal de Diabetes Mellitus tipo 2 en adultos asintomáticos sin factores de riesgo adicionales: ¿A partir de qué edad (años) se debe iniciar el tamizaje periódico con glucemia plasmática o HbA1c?",
-        slider_config: {
-          min: 20,
-          max: 65,
-          step: 1,
-          defecto: 30,
-          unidad: "años",
-          valor_objetivo: 35, // ADA Update 2022-2026: Cribado universal desde los 35 años
-          margen_tolerancia: 0, // Tolerancia estricta
-          margen_parcial: 5    // Si marca entre 30 y 40 da crédito parcial
-        }
-      },
-      {
-        id: "ITEM-05",
-        type: "script_concordance",
-        titulo: "Prueba de Concordancia de Guiones Clínicos (SCT)",
-        contexto: "Hombre de 56 años con hipertensión arterial en tratamiento con Enalapril 20 mg/día acude por cuadro de tos seca persistente de 4 semanas, sin fiebre ni disnea.",
-        hipotesis_inicial: "La tos es un efecto secundario inducido por el inhibidor de la ECA (Enalapril).",
-        nuevo_hallazgo: "El paciente suspendió el Enalapril por iniciativa propia hace 3 semanas y la tos persiste con la misma intensidad.",
-        // Ponderación de consenso de panel de expertos médicos (SCT Methodology)
-        escala_sct: [
-          { valor: -2, label: "-2", desc: "Prácticamente descartada", peso: 1.0 }, // Consenso experto: si persiste >2-3 semanas sin IECA, cae fuertemente la probabilidad
-          { valor: -1, label: "-1", desc: "Menos probable", peso: 0.6 },
-          { valor: 0,  label: "0",  desc: "Efecto neutro / no cambia", peso: 0.0 },
-          { valor: 1,  label: "+1", desc: "Más probable", peso: 0.0 },
-          { valor: 2,  label: "+2", desc: "Prácticamente confirmada", peso: 0.0 }
-        ]
-      }
-    ];
+    // Banco oficial de reactivos clínicos (a suministrar por el docente)
+    const CLINICAL_ITEMS_BANK = [];
 
     // --- PSEUDO-RANDOM NUMBER GENERATOR (MULBERRY32 SEED) ---
     // Garantiza que el Carné del alumno baraje reactivos y opciones de forma determinista y reproducible
@@ -849,6 +775,8 @@
       if (!res) return false;
 
       switch(item.type) {
+        case 'seleccion_multiple':
+          return res.selectedId !== undefined && res.selectedId !== null;
         case 'semaforo_evidencia':
           // Al menos debe haber clasificado todas las intervenciones
           return item.intervenciones.every(i => res[i.id] !== undefined);
@@ -866,11 +794,14 @@
     }
 
     // =========================================================================
-    // WIDGETS INTERACTIVOS DE JUICIO CLÍNICO (5 TIPOS)
+    // WIDGETS INTERACTIVOS DE JUICIO CLÍNICO
     // =========================================================================
 
     function renderWidget(item, host) {
       switch (item.type) {
+        case 'seleccion_multiple':
+          renderSeleccionMultiple(item, host);
+          break;
         case 'semaforo_evidencia':
           renderSemaforoEvidencia(item, host);
           break;
@@ -889,6 +820,58 @@
         default:
           host.innerHTML = `<p class="text-rose-500">Tipo de widget no soportado: ${item.type}</p>`;
       }
+    }
+
+    // --- WIDGET 0: SELECCIÓN MÚLTIPLE (CASOS CLÍNICOS TRADICIONALES) ---
+    function renderSeleccionMultiple(item, host) {
+      if (!APP_STATE.responses[item.id]) {
+        APP_STATE.responses[item.id] = { selectedId: null };
+      }
+      const selectedId = APP_STATE.responses[item.id].selectedId;
+
+      let html = `
+        <div class="space-y-3 pt-1">
+          <p class="text-xs text-slate-500 font-medium">Selecciona la opción correcta:</p>
+          <div class="space-y-2.5">
+      `;
+
+      item.opciones.forEach((opt, idx) => {
+        const isSelected = (selectedId === opt.id);
+        const letter = String.fromCharCode(65 + idx);
+
+        html += `
+          <button type="button" data-opt-id="${opt.id}"
+            class="mc-option-btn w-full p-3.5 rounded-2xl border text-left transition-all flex items-start space-x-3 ${
+              isSelected 
+                ? 'border-med-600 bg-med-50/90 shadow-md ring-2 ring-med-300' 
+                : 'border-slate-200 bg-white hover:border-slate-300 active:bg-slate-50'
+            }">
+            
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
+              isSelected ? 'bg-med-600 text-white' : 'bg-slate-100 text-slate-700'
+            }">
+              ${isSelected ? '✓' : letter}
+            </div>
+
+            <div class="flex-1 text-xs font-medium text-slate-800 leading-snug">
+              ${opt.text || opt.label}
+            </div>
+          </button>
+        `;
+      });
+
+      html += `</div></div>`;
+      host.innerHTML = html;
+
+      host.querySelectorAll('.mc-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          vibrate(25);
+          const optId = btn.dataset.optId;
+          APP_STATE.responses[item.id].selectedId = optId;
+          saveStateToLocalStorage();
+          renderSeleccionMultiple(item, host);
+        });
+      });
     }
 
     // --- WIDGET 1: SEMÁFORO DE EVIDENCIA ---
@@ -1261,6 +1244,17 @@
         const res = APP_STATE.responses[item.id] || {};
 
         switch (item.type) {
+          case 'seleccion_multiple': {
+            const itemMax = item.puntos || 10;
+            maxPossibleScore += itemMax;
+            const chosen = item.opciones.find(o => o.id === res.selectedId);
+            const isCorrect = chosen && chosen.es_correcta;
+            const itemScore = isCorrect ? itemMax : 0;
+            totalRawScore += itemScore;
+            breakdown[item.id] = { obtenido: itemScore, maximo: itemMax, correcto: isCorrect };
+            break;
+          }
+
           case 'semaforo_evidencia': {
             // Cada acierto suma puntos_acierto (ej: 2)
             // Error iatrogénico grave resta penalizacion_iatrogenica (ej: 3)
@@ -1434,6 +1428,144 @@
       }
     }
 
+    // --- GENERADOR DE TARJETAS DE REVISIÓN Y RETROALIMENTACIÓN FORMATIVA ---
+    function generateReviewCardsHtml(receipt) {
+      if (!APP_STATE.shuffledItems || APP_STATE.shuffledItems.length === 0) {
+        return '<p class="text-xs text-slate-500 text-center py-2">No hay preguntas registradas para revisión.</p>';
+      }
+
+      const breakdown = (receipt.respuestas_detalle && receipt.respuestas_detalle.desglose_calificacion) || {};
+
+      return APP_STATE.shuffledItems.map((item, index) => {
+        const res = APP_STATE.responses[item.id] || {};
+        const scoreInfo = breakdown[item.id] || { obtenido: 0, maximo: 10 };
+        const isFull = scoreInfo.obtenido >= scoreInfo.maximo && scoreInfo.maximo > 0;
+        const isZero = scoreInfo.obtenido === 0;
+
+        let badge = isFull 
+          ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">✓ Correcto</span>'
+          : (isZero
+            ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">✕ Incorrecto</span>'
+            : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">⚡ Parcial</span>');
+
+        let detailHtml = '';
+
+        if (item.type === 'seleccion_multiple' || item.type === 'decision_binaria') {
+          detailHtml = `
+            <div class="space-y-1.5 mt-2.5">
+              ${item.opciones.map((opt, optIdx) => {
+                const isSelectedByStudent = (res.selectedId === opt.id);
+                const isActuallyCorrect = !!opt.es_correcta;
+                const letter = String.fromCharCode(65 + optIdx);
+
+                let cardClass = 'bg-slate-50 border-slate-200 text-slate-700';
+                let tag = '';
+
+                if (isActuallyCorrect) {
+                  cardClass = 'bg-emerald-50 border-emerald-400 text-emerald-950 font-semibold ring-1 ring-emerald-300';
+                  tag = isSelectedByStudent
+                    ? '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full shrink-0">✓ Tu Respuesta (Correcta)</span>'
+                    : '<span class="text-[10px] bg-emerald-600 text-white font-bold px-2 py-0.5 rounded-full shrink-0">✓ Respuesta Correcta</span>';
+                } else if (isSelectedByStudent) {
+                  cardClass = 'bg-rose-50 border-rose-300 text-rose-900 font-semibold';
+                  tag = '<span class="text-[10px] bg-rose-600 text-white font-bold px-2 py-0.5 rounded-full shrink-0">✕ Tu Selección (Error)</span>';
+                }
+
+                return `
+                  <div class="p-2.5 rounded-xl border text-xs flex items-center justify-between space-x-2 ${cardClass}">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-bold text-[11px] opacity-75">${letter})</span>
+                      <span>${opt.text || opt.label}</span>
+                    </div>
+                    ${tag}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        } else if (item.type === 'semaforo_evidencia') {
+          const catLabels = { fuerte: '🟢 Fuerte', selectiva: '🟡 Selectiva', iatrogenica: '🔴 No recomendada' };
+          detailHtml = `
+            <div class="space-y-1.5 mt-2.5">
+              ${item.intervenciones.map(interv => {
+                const studentChoice = res[interv.id] || 'Sin responder';
+                const isCorrect = (studentChoice === interv.correct);
+
+                return `
+                  <div class="p-2.5 rounded-xl border text-xs bg-slate-50 space-y-1 ${isCorrect ? 'border-emerald-300 bg-emerald-50/30' : 'border-rose-300 bg-rose-50/30'}">
+                    <p class="font-medium text-slate-800">${interv.text}</p>
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] pt-0.5">
+                      <span>Tu elección: <strong class="${isCorrect ? 'text-emerald-700' : 'text-rose-600'}">${catLabels[studentChoice] || studentChoice}</strong></span>
+                      ${!isCorrect ? `<span>&bull; Correcta: <strong class="text-emerald-700">${catLabels[interv.correct]}</strong></span>` : '<span class="text-emerald-600 font-bold">✓</span>'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        } else if (item.type === 'presupuesto_restringido') {
+          const selected = res.selectedIds || [];
+          detailHtml = `
+            <div class="space-y-1.5 mt-2.5">
+              ${item.opciones.map(opt => {
+                const wasChosen = selected.includes(opt.id);
+                const isOptimal = !!opt.es_optima;
+                let border = isOptimal ? 'border-emerald-300 bg-emerald-50/70' : (wasChosen ? 'border-rose-300 bg-rose-50' : 'border-slate-200 bg-slate-50');
+
+                return `
+                  <div class="p-2 rounded-xl border text-xs flex items-center justify-between ${border}">
+                    <span>${opt.text}</span>
+                    <div class="flex items-center space-x-1">
+                      ${wasChosen ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-white">Elegido</span>' : ''}
+                      ${isOptimal ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white">✓ Indicado</span>' : '<span class="text-[10px] text-slate-400">No indicado</span>'}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        } else if (item.type === 'umbral_slider') {
+          const cfg = item.slider_config;
+          const userVal = res.value !== undefined ? res.value : 'Sin responder';
+          detailHtml = `
+            <div class="mt-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+              <div>Tu valor fijado: <strong class="font-mono text-slate-900">${userVal} ${cfg.unidad}</strong></div>
+              <div>Valor de directriz clínica: <strong class="font-mono text-emerald-700">${cfg.valor_objetivo} ${cfg.unidad}</strong></div>
+            </div>
+          `;
+        } else if (item.type === 'script_concordance') {
+          detailHtml = `
+            <div class="mt-2.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+              <div>Tu juicio en la escala: <strong class="font-mono text-slate-900">${res.selectedValor !== undefined ? res.selectedValor : 'Sin responder'}</strong></div>
+              <div>Consenso de panel de expertos: <strong class="text-emerald-700">${item.escala_sct.filter(e => e.peso >= 0.5).map(e => e.label + ' (' + e.desc + ')').join(', ')}</strong></div>
+            </div>
+          `;
+        }
+
+        const explanation = item.explicacion || item.retroalimentacion_rapida || '';
+        const expHtml = explanation 
+          ? `
+            <div class="mt-3 p-3 rounded-xl bg-teal-50 border border-teal-200/80 text-xs text-teal-950 leading-relaxed">
+              <span class="font-bold text-teal-900 block mb-0.5">💡 Fundamento Clínico y Justificación:</span>
+              <p>${explanation}</p>
+            </div>
+          `
+          : '';
+
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-2 text-left">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-slate-900">Caso ${index + 1}: ${item.titulo}</span>
+              ${badge}
+            </div>
+            <p class="text-[11px] text-slate-600 leading-relaxed">${item.contexto}</p>
+            ${detailHtml}
+            ${expHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
     // --- 3. VISTA DE RESULTADOS Y COMPROBANTE OFFLINE-FIRST ---
     function renderResultsView() {
       // Ocultar barra superior durante resultados
@@ -1502,6 +1634,27 @@
               </div>
             </div>
 
+          </div>
+
+          <!-- SECCIÓN: REVISIÓN DE RESPUESTAS Y RETROALIMENTACIÓN FORMATIVA -->
+          <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
+                  <span>📖</span>
+                  <span>Revisión de Casos Clínicos</span>
+                </h3>
+                <p class="text-[11px] text-slate-500">Respuestas correctas y justificación clínica formativa</p>
+              </div>
+              <span class="text-xs bg-med-100 text-med-800 font-bold px-2.5 py-1 rounded-full font-mono">
+                ${receipt.nota_final.toFixed(2)} / 10
+              </span>
+            </div>
+
+            <!-- Lista de Preguntas con Corrección y Explicación -->
+            <div id="review-items-list" class="space-y-4">
+              ${generateReviewCardsHtml(receipt)}
+            </div>
           </div>
 
           <!-- Estado de Sincronización con Google Sheets -->
