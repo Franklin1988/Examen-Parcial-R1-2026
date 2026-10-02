@@ -101,7 +101,7 @@
   <!-- ==================== HEADER BAR ==================== -->
   <header id="app-header" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 flex items-center justify-between shadow-xs transition-all duration-300">
     <div class="flex items-center space-x-2.5">
-      <div class="w-8 h-8 rounded-lg bg-med-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+      <div id="dev-logo-btn" title="Doble clic para reiniciar evaluación (Modo Docente/Desarrollador)" class="w-8 h-8 rounded-lg bg-med-600 text-white flex items-center justify-center font-bold text-lg shadow-sm cursor-pointer select-none active:scale-95 transition-transform">
         ⚕
       </div>
       <div>
@@ -433,6 +433,14 @@
           e.returnValue = 'La evaluación está en curso. Si recargas podrías perder el flujo.';
         }
       });
+
+      // Clic en logo de cabecera para reinicio rápido del docente/desarrollador
+      const logoBtn = document.getElementById('dev-logo-btn');
+      if (logoBtn) {
+        logoBtn.addEventListener('click', () => {
+          resetDeveloperSession();
+        });
+      }
     }
 
     // --- PERSISTENCIA LOCAL STORAGE (OFFLINE RESILIENCE) ---
@@ -1760,6 +1768,12 @@
             <button id="btn-retry-sync" class="w-full py-2.5 px-3 rounded-xl bg-med-50 text-med-700 hover:bg-med-100 font-bold text-xs border border-med-200 transition-colors">
               Reintentar Envío al Webhook de Google Sheets
             </button>
+
+            <!-- Botón Reiniciar para Docente/Desarrollador -->
+            <button id="btn-reset-session" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 text-slate-100 hover:bg-rose-700 active:scale-[0.99] font-bold text-xs border border-slate-700 transition-colors flex items-center justify-center space-x-1.5 shadow-xs">
+              <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>🔄 Nueva Evaluación / Reiniciar Prueba (Modo Desarrollador)</span>
+            </button>
           </div>
 
         </div>
@@ -1821,6 +1835,19 @@
       document.getElementById('btn-retry-sync').addEventListener('click', () => {
         dispatchPayload(receipt);
       });
+
+      document.getElementById('btn-reset-session')?.addEventListener('click', () => {
+        resetDeveloperSession();
+      });
+    }
+
+    // Función de reinicio global para modo desarrollador/docente
+    function resetDeveloperSession() {
+      if (confirm("¿Deseas reiniciar la evaluación y borrar esta prueba para comenzar de nuevo desde el Lobby?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        clearInterval(APP_STATE.timerInterval);
+        location.reload();
+      }
     }
 
     // =========================================================================
