@@ -212,7 +212,7 @@
       EXAM_DURATION_MINUTES: 30, // Tiempo total calibrado para 15 casos clínicos (2 min por caso)
       WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzxtS26_PqR-ONHTWL6qEYEhHQOUwBNc4-YGhLGpzE3pwELqiE8yLbkHqyT0OfCmdLCkw/exec",
       SALT_INTEGRITY: "MEDEVAL-FAMILIAR-HASH-2026-SECURE",
-      PASSING_GRADE: 6.0,
+      PASSING_GRADE: 7.0,
       MAX_GRADE: 10.0
     };
 
@@ -223,7 +223,7 @@
         id: "ITEM-01",
         type: "seleccion_multiple",
         titulo: "Protocolo de Cribado Metabólico y Renal",
-        subtitulo: "PAPPS / Diapositiva 13: Protocolos de cribado metabólico y renal",
+        subtitulo: "PAPPS: Cribado Cardiovascular y Metabólico en el Adulto",
         contexto: "Varón de 46 años, sin antecedentes personales de hipertensión ni diabetes, acude a revisión de salud. En la exploración física se registra un IMC de 31 kg/m² (obesidad) y una presión arterial de 126/80 mmHg. Según los protocolos del PAPPS, ¿qué periodicidad de cribado corresponde aplicar a este paciente?",
         opciones: [
           { id: "opt-a", text: "Toma de presión arterial cada dos años y determinación de glucemia basal cada tres años.", es_correcta: true },
@@ -232,13 +232,13 @@
           { id: "opt-d", text: "Toma de presión arterial cada cinco años y determinación de glucemia basal cada tres años.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Hipertensión Arterial: En mayores de 40 años el cribado sistemático se realiza cada 2 años (en el grupo de 14 a 40 años es cada 4-5 años).\n• Diabetes Tipo 2: El cribado 'No es poblacional'; la directriz indica realizar glucemia basal cada 3 años únicamente en perfiles de alto riesgo (la obesidad es uno de ellos). Las opciones B, C y D contienen intervalos incorrectos para su grupo de edad o asignan una periodicidad no protocolizada."
+        explicacion: "• Hipertensión Arterial: En mayores de 40 años el cribado sistemático con toma de presión arterial se realiza cada 2 años (en el grupo de 14 a 40 años es cada 4 a 5 años).\n• Diabetes Mellitus Tipo 2: El cribado no es poblacional general; la directriz clínica indica realizar glucemia basal cada 3 años únicamente en perfiles de alto riesgo (como pacientes con IMC ≥ 30 kg/m²).\n• Análisis de Distractores: Las opciones B, C y D contienen intervalos temporales incorrectos para el grupo etario o asignan una periodicidad no protocolizada."
       },
       {
         id: "ITEM-02",
         type: "seleccion_multiple",
         titulo: "Umbrales Cuantitativos de Consumo de Alcohol",
-        subtitulo: "PAPPS / Diapositiva 10: Alcohol: Detección de umbrales de riesgo cuantitativos",
+        subtitulo: "PAPPS: Detección Sistemática y Manejo de Consumo de Riesgo",
         contexto: "Durante la exploración sistemática de estilos de vida en la consulta, un paciente varón de 34 años reporta un consumo habitual de 30 UBE semanales (300 g/semana). Según los umbrales cuantitativos y el protocolo de actuación del PAPPS, ¿cuál es la conducta correspondiente?",
         opciones: [
           { id: "opt-a", text: "Se encuentra en rango deseable; corresponde felicitar al paciente y repetir la detección sistemática a los cuatro años.", es_correcta: false },
@@ -247,13 +247,13 @@
           { id: "opt-d", text: "Cumple criterio diagnóstico de adicción física; corresponde tramitar referencia inmediata a la unidad de desintoxicación.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Umbrales en varones: El límite deseable es <170 g/semana (<17 UBE) y el límite de riesgo cuantitativo es 280 g/semana (28 UBE).\n• Conducta: Al consumir 300 g/semana (30 UBE), el paciente supera el límite de riesgo, lo que según el algoritmo genera una 'Alarma clínica' que obliga a aplicar inmediatamente el cuestionario de dependencia (MALT). Las demás opciones subestiman el riesgo o asumen una conducta fuera de protocolo."
+        explicacion: "• Umbrales Cuantitativos en Varones: El límite deseable es < 17 UBE semanales (< 170 g/semana) y el umbral de riesgo cuantitativo se fija en 28 UBE semanales (280 g/semana).\n• Conducta Inmediata: Al consumir 30 UBE semanales (300 g/semana), el paciente sobrepasa el límite de riesgo, activando la alarma clínica que exige aplicar inmediatamente el cuestionario de dependencia (MALT).\n• Análisis de Distractores: Las demás opciones subestiman el riesgo del paciente o asumen conductas precipitadas fuera de algoritmo asistencial."
       },
       {
         id: "ITEM-03",
         type: "seleccion_multiple",
         titulo: "Los Pilares Fundacionales de Alma-Ata",
-        subtitulo: "Alma-Ata (1978) / Diapositiva 4: Principios Fundacionales",
+        subtitulo: "Conferencia Internacional sobre Atención Primaria de Salud (Alma-Ata 1978)",
         contexto: "Durante el diagnóstico de salud comunitario, el equipo de atención primaria constata que los problemas de salud infantil del sector están condicionados por la precariedad de las viviendas, la contaminación de fuentes hídricas y el ausentismo escolar. Para fundamentar la intervención interinstitucional bajo los postulados de la Conferencia de Alma-Ata (1978), se recurre al principio de «Salud en Todas las Políticas». ¿Cuál es la formulación textual que define este principio en el documento fundacional?",
         opciones: [
           { id: "opt-a", text: "La concepción de la salud como un estado de completo bienestar inalienable, superando la ausencia de enfermedad.", es_correcta: false },
@@ -262,13 +262,13 @@
           { id: "opt-d", text: "El reconocimiento del derecho y deber ciudadano de intervenir activamente en la planificación de sus cuidados.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• «Salud en Todas las Políticas»: El desarrollo económico y social es condición sine qua non para la salud. Requiere coordinación intersectorial activa (educación, medio ambiente, trabajo).\n\n• Análisis de distractores oficiales de Alma-Ata:\n- Opción A es la definición textual de «Derecho Fundamental».\n- Opción C es la definición textual de «Inaceptabilidad de la Desigualdad».\n- Opción D es la definición textual de «Participación Comunitaria»."
+        explicacion: "• «Salud en Todas las Políticas»: El documento de Alma-Ata define que el desarrollo económico y social es condición sine qua non (indispensable) para la salud, requiriendo coordinación intersectorial activa (educación, medio ambiente, trabajo).\n• Análisis de Distractores: La opción A define «Derecho Fundamental»; la opción C corresponde a «Inaceptabilidad de la Desigualdad»; y la opción D define «Participación Comunitaria»."
       },
       {
         id: "ITEM-04",
         type: "seleccion_multiple",
         titulo: "Palancas Operativas de la Estrategia AP21",
-        subtitulo: "Estrategia AP21 / Diapositiva 11: Palancas Estructurales",
+        subtitulo: "Estrategia de Atención Primaria para el Siglo XXI (AP21)",
         contexto: "En una sesión de gestión clínica del centro de salud, el equipo médico analiza propuestas para optimizar el funcionamiento del primer nivel asistencial y mejorar la calidad de atención. Al alinear estas iniciativas con las palancas de la Estrategia Atención Primaria Siglo XXI (AP21), ¿cuál de las siguientes medidas corresponde específicamente al eje de «Capacidad Resolutiva»?",
         opciones: [
           { id: "opt-a", text: "Generalización de la historia clínica digital interoperable y modernización tecnológica en la gestión de los centros.", es_correcta: false },
@@ -277,13 +277,13 @@
           { id: "opt-d", text: "Incremento neto de médicos de familia en plantilla y diseño de carreras profesionales más atractivas.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Palanca 3 («Capacidad Resolutiva»): Centrada en ampliar el acceso directo a pruebas diagnósticas y exploraciones complementarias desde el primer nivel, garantizando agilidad clínica e independencia diagnóstica.\n\n• Análisis de distractores oficiales de la AP21:\n- Opción A corresponde a la palanca 4 («Innovación Tecnológica»).\n- Opción C corresponde a la palanca 5 («Gestión Compartida»).\n- Opción D corresponde a la palanca 2 («Recursos Humanos»)."
+        explicacion: "• Eje de «Capacidad Resolutiva»: Prioriza la ampliación del acceso directo a pruebas diagnósticas y exploraciones complementarias desde la consulta de atención primaria para agilizar la resolución clínica ambulatoria.\n• Análisis de Distractores: La opción A pertenece a la palanca «Innovación Tecnológica»; la opción C a «Gestión Compartida»; y la opción D a «Recursos Humanos»."
       },
       {
         id: "ITEM-05",
         type: "seleccion_multiple",
         titulo: "Estratificación en la Matriz de Riesgo Neonatal",
-        subtitulo: "Matriz de Riesgo Neonatal y Signos de Alarma / Diapositiva 6",
+        subtitulo: "Matriz de Riesgo Neonatal y Algoritmo de Seguimiento Ambulatorio",
         contexto: "Durante la visita domiciliaria realizada por el equipo de atención primaria en las primeras 48 horas de vida, se evalúa a un recién nacido. Según los criterios de la Matriz de Riesgo Neonatal, ¿cuál de los siguientes perfiles clasifica en Código Amarillo (Manejo y Seguimiento Estricto ECOS) con indicación de tamizajes extendidos a los 5 años?",
         opciones: [
           { id: "opt-a", text: "Neonato prematuro por test de Ballard sin signos de alarma y con un peso de nacimiento de 1.950 gramos.", es_correcta: true },
@@ -292,13 +292,13 @@
           { id: "opt-d", text: "Neonato a término con examen físico normal y reflejo de succión vigoroso durante toda la alimentación.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Código Amarillo (Manejo y Seguimiento Estricto ECOS):\n- Criterios: Prematuro (Test de Ballard) sin signos de alarma, bajo peso al nacer (< 2,000 g) o riesgo social.\n- Acción protocolizada: Tamizajes extendidos a los 5 años (presión arterial, función renal).\n\n• Análisis de distractores según la matriz clínica:\n- Opción B clasifica en Código Rojo (Referir urgentemente a Hospital - Grupo III) por presentar signos de peligro específicos (tiraje subcostal y aleteo nasal).\n- Opción C clasifica automáticamente en Código Rojo (Grupo III), ya que toda prematurez menor a 34 semanas exige referencia hospitalaria aun sin signos evidentes de peligro.\n- Opción D clasifica en Código Verde (Control Sano Rutinario) por tratarse de un neonato a término con exploración normal y buena succión."
+        explicacion: "• Criterios de Código Amarillo (Seguimiento Estricto ECOS): Corresponde a neonatos prematuros por test de Ballard sin signos de alarma y con bajo peso al nacer (< 2,000 g), o con riesgo social; ameritan tamizajes extendidos a los 5 años (presión arterial y función renal).\n• Código Rojo (Referencia Urgente): La presencia de signos de peligro respiratorio (tiraje, aleteo en opción B) o prematurez < 34 semanas (opción C) exige traslado hospitalario inmediato.\n• Código Verde (Control Sano): Neonato a término con examen normal y succión adecuada (opción D)."
       },
       {
         id: "ITEM-06",
         type: "seleccion_multiple",
         titulo: "Esquema de Inmunizaciones MINSAL 2024 al Primer Año",
-        subtitulo: "El Escudo Inmunológico: Esquema MINSAL 2024 (Primer Año) / Diapositiva 9",
+        subtitulo: "Esquema Nacional de Vacunación (Primer Año de Vida)",
         contexto: "Acude a la unidad comunitaria de salud familiar una madre con su hijo de 6 meses de edad para su control periódico de salud programado. Al revisar el carné de vacunación infantil conforme al Esquema MINSAL 2024, ¿cuál es la combinación exacta de biológicos que corresponde administrar a esta edad?",
         opciones: [
           { id: "opt-a", text: "Vacuna Hexavalente, vacuna contra Rotavirus y vacuna contra Poliomielitis.", es_correcta: true },
@@ -307,13 +307,13 @@
           { id: "opt-d", text: "Vacuna Hexavalente, vacuna contra Neumococo y primera dosis de vacuna SPR.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Esquema MINSAL 2024 a los 6 Meses: Corresponde la combinación de Vacuna Hexavalente, vacuna contra Rotavirus y vacuna contra Poliomielitis (Polio).\n\n• Análisis de distractores:\n- Opción B: La vacuna Neumococo Conjugada solo se pauta a los 2 y 4 meses en el primer año (no se administra dosis rutinaria de neumococo a los 6 meses según la lámina oficial).\n- Opción C: La vacuna contra Hepatitis A corresponde aplicarse a los 12 meses de edad.\n- Opción D: Neumococo no corresponde a los 6 meses y la primera dosis de SPR (Sarampión, Paperas, Rubéola) se administra a los 12 meses de vida."
+        explicacion: "• Esquema Oficial a los 6 Meses: Corresponde la coadministración de vacuna Hexavalente, vacuna contra Rotavirus y vacuna contra Poliomielitis (Polio).\n• Análisis de Distractores: La vacuna Neumococo Conjugada se pauta exclusivamente a los 2 y 4 meses en el primer año. La vacuna contra Hepatitis A y la primera dosis de SPR se aplican a los 12 meses de vida."
       },
       {
         id: "ITEM-07",
         type: "seleccion_multiple",
         titulo: "Cronograma Preventivo en Adolescentes: Monitoreo Bienal",
-        subtitulo: "Atención Integral al Adolescente / Diapositiva 10: Cronograma de Cuidados Preventivos",
+        subtitulo: "Guía Clínica de Atención Integral de Salud en la Adolescencia",
         contexto: "Durante el control periódico de salud de un adolescente en el primer nivel de atención, el médico de familia programa el paquete de intervenciones preventivas. De acuerdo con el Cronograma de Cuidados Preventivos de la guía, ¿cuál de las siguientes acciones asistenciales corresponde específicamente a la pauta de Monitoreo Bienal (cada 2 años)?",
         opciones: [
           { id: "opt-a", text: "Medición periódica de tensión arterial y control de peso y talla por riesgo de obesidad.", es_correcta: true },
@@ -322,13 +322,13 @@
           { id: "opt-d", text: "Citología cervicovaginal para pesquisa de cáncer de cuello uterino tras el primer coito.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Monitoreo Bienal (Cada 2 años - Diapositiva 10):\n- Hipertensión Arterial: Medición de TA (Consejería: Alimentación y actividad física).\n- Crecimiento y Obesidad: Peso/talla (Consejería: Alimentación y actividad física).\n\n• Análisis de distractores oficiales:\n- Opción B pertenece a Monitoreo Anual («Salud bucal: Visita al estomatólogo» y «Accidentes: Orientación preventiva»).\n- Opción C pertenece a Monitoreo Anual («Planificación familiar: Métodos anticonceptivos» y «Riesgos psicosociales: Hogar, tiempo libre, drogas, suicidio»).\n- Opción D pertenece a Monitoreo Condicional (cada 1 a 3 años): Citología cervicovaginal a partir del primer coito."
+        explicacion: "• Monitoreo Bienal (Cada 2 Años): En la adolescencia, comprende la medición periódica de tensión arterial y el control de peso y talla para pesquisar sobrepeso u obesidad, con consejería en estilos de vida.\n• Monitoreo Anual: Visita al estomatólogo (salud bucal), prevención de accidentes, métodos anticonceptivos y pesquisa psicosocial.\n• Monitoreo Condicional: Citología cervicovaginal recomendada a partir del primer coito (cada 1 a 3 años)."
       },
       {
         id: "ITEM-08",
         type: "seleccion_multiple",
         titulo: "Estratificación del Riesgo Obstétrico en la Adolescente",
-        subtitulo: "Atención Ginecológica: Riesgo Obstétrico y Familiar / Diapositiva 8",
+        subtitulo: "Atención Ginecológica y Obstétrica en la Adolescencia",
         contexto: "Una adolescente de 15 años acude a su primer control prenatal en la consulta de medicina familiar tras confirmarse un embarazo de 10 semanas de gestación. Al realizar la estratificación del riesgo materno-fetal según la Guía Clínica de Atención Integral al Adolescente, el médico debe identificar las complicaciones biológicas que presentan mayor incidencia documentada en este grupo etario. ¿Cuál de los siguientes grupos describe con exactitud el espectro de riesgo biológico normado en la guía?",
         opciones: [
           { id: "opt-a", text: "Mayor incidencia de anemia, toxemia gravídica, parto distócico, bajo peso al nacer y enfermedades genéticas.", es_correcta: true },
@@ -337,13 +337,13 @@
           { id: "opt-d", text: "Mayor incidencia de anemia, diabetes gestacional temprana, desproporción fetopélvica y defectos del tubo neural.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Riesgo Biológico en Gestante Adolescente (Diapositiva 8):\n- Mayor incidencia documentada de: anemia, toxemia gravídica, parto distócico, recién nacidos con bajo peso y enfermedades genéticas. El estado nutricional previo es un determinante crítico.\n\n• Análisis de distractores:\n- Las opciones B, C y D incluyen combinaciones de patologías perinatales generales pero alteran o no reflejan la constelación literal de riesgo biológico establecida en la guía clínica."
+        explicacion: "• Riesgo Biológico Normado en Embarazo Adolescente: La guía clínica documenta mayor incidencia de anemia, toxemia gravídica (preeclampsia), parto distócico, recién nacidos de bajo peso y enfermedades genéticas. El estado nutricional previo es un determinante crítico.\n• Análisis de Distractores: Las demás opciones mezclan patologías obstétricas generales pero no reflejan la constelación literal de riesgo biológico establecida en la guía clínica."
       },
       {
         id: "ITEM-09",
         type: "seleccion_multiple",
         titulo: "Metas de Control Cardiovascular por Estrato Etario",
-        subtitulo: "Adulto Mayor / Diapositiva 5: Tablero de metas preventivas y clínicas",
+        subtitulo: "Tablero de Metas Preventivas y Clínicas en el Adulto Mayor",
         contexto: "Durante el control de salud en atención primaria se evalúan los registros de presión arterial de dos adultos mayores bajo tratamiento farmacológico:\n• Paciente A (74 años): Presenta un promedio tensional de 136/84 mmHg.\n• Paciente B (82 años): Presenta un promedio tensional de 146/86 mmHg.\n\nAl contrastar estos hallazgos con el Tablero de Metas Preventivas y Clínicas, ¿cuál es la interpretación clínica y la conducta protocolizada?",
         opciones: [
           { id: "opt-a", text: "Ambos pacientes cumplen las metas de control clínico fijadas para su edad (<140/90 mmHg en 65-79 años y <150/90 mmHg en ≥80 años).", es_correcta: true },
@@ -352,13 +352,13 @@
           { id: "opt-d", text: "Ninguno de los pacientes alcanza el objetivo terapéutico, debiendo intensificarse la terapia en ambos para lograr cifras <130/80 mmHg.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Metas de Presión Arterial en el Adulto Mayor (Diapositiva 5):\n- De 65 a 79 años: Meta < 140/90 mmHg (Paciente A con 136/84 mmHg cumple meta).\n- De 80 y más años (≥ 80 años): Meta < 150/90 mmHg (Paciente B con 146/86 mmHg cumple meta).\n\n• Criterio clínico: Ambos cumplen sus metas. En octogenarios se establece una meta más flexible (< 150/90 mmHg) para prevenir hipotensión ortostática, caídas y deterioro funcional."
+        explicacion: "• Metas Tensionales Diferenciadas por Edad: En personas de 65 a 79 años la meta clínica es < 140/90 mmHg; en personas de 80 y más años la meta es < 150/90 mmHg.\n• Interpretación Clínica: Ambos pacientes cumplen las metas fijadas para su estrato etario. En octogenarios se establece una meta de seguridad más flexible para prevenir hipotensión ortostática, caídas y deterioro funcional."
       },
       {
         id: "ITEM-10",
         type: "seleccion_multiple",
         titulo: "Criterios de Focalización Nutricional del PACAM",
-        subtitulo: "Adulto Mayor / Diapositiva 6: PACAM - Nutrición y Funcionalidad",
+        subtitulo: "Programa de Alimentación Complementaria del Adulto Mayor (PACAM)",
         contexto: "En la consulta del CESFAM se gestiona el acceso a los suplementos del Programa de Alimentación Complementaria del Adulto Mayor (PACAM). De acuerdo con los criterios de focalización y objetivos del programa, ¿cuál de los siguientes perfiles corresponde específicamente al nivel de Prevención Secundaria?",
         opciones: [
           { id: "opt-a", text: "Personas de 60 a 69 años en tratamiento antituberculoso para asegurar la eficacia del tratamiento médico.", es_correcta: true },
@@ -367,13 +367,13 @@
           { id: "opt-d", text: "Personas residentes en establecimientos de larga estadía para retardar el deterioro y dependencia severa.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Prevención Secundaria en PACAM (Diapositiva 6):\n- Población: Personas de 60-69 años en tratamiento antituberculoso (TBC).\n- Objetivo: Corregir déficit nutricional para asegurar la eficacia del tratamiento médico.\n\n• Análisis de distractores según niveles normados:\n- Opción B: Prevención Primaria (65-69 años con EMPAM de riesgo).\n- Opción C: Prevención Primaria universal (mayores de 70 años autovalentes).\n- Opción D: Prevención Terciaria (residentes en establecimientos de larga estadía / ELEAM)."
+        explicacion: "• Nivel de Prevención Secundaria: El programa focaliza este nivel exclusivamente en personas de 60 a 69 años bajo tratamiento antituberculoso (TBC) activo, con el objetivo de corregir el déficit nutricional y asegurar la eficacia terapéutica.\n• Niveles Alternativos: Los subgrupos de 65 a 69 años con EMPAM de riesgo o mayores de 70 años autovalentes pertenecen a Prevención Primaria; los residentes en ELEAM pertenecen a Prevención Terciaria."
       },
       {
         id: "ITEM-11",
         type: "decision_binaria",
         titulo: "Criterios de Clasificación de Riesgo Obstétrico",
-        subtitulo: "Obstetricia / Diapositiva 12: Criterios de Clasificación de Riesgo Obstétrico",
+        subtitulo: "Criterios de Clasificación del Riesgo Obstétrico en el Control Prenatal",
         contexto: "En la consulta prenatal de medicina familiar se evalúa a una gestante de 11 semanas que refiere en su historia obstétrica el antecedente de una cesárea anterior y un parto pretérmino previo, manteniéndose normotensa y asintomática en la consulta actual. De acuerdo con los Criterios de Clasificación de Riesgo Obstétrico de la guía:\n\n«Una gestante que acumula los antecedentes de cesárea anterior y de parto pretérmino previo debe clasificarse en el grupo de Alto Riesgo y ser referida obligatoriamente para control prenatal exclusivo en el Segundo Nivel asistencial».",
         opciones: [
           {
@@ -392,13 +392,13 @@
           }
         ],
         puntos: 1,
-        explicacion: "• Clasificación Oficial de Riesgo Obstétrico (Diapositiva 12):\n- Bajo Riesgo (Atención Primaria): Incluye ganancia inadecuada de peso, anemia leve, infecciones virales no severas, tabaquismo/alcoholismo en vigilancia extrema, y antecedentes de cesárea anterior o parto pretérmino previo.\n- Alto Riesgo (Segundo Nivel): Se reserva para patologías crónicas activas (HTA, diabetes, cardiopatías, nefropatías, epilepsia), gestorragias, rotura prematura de membranas, alteraciones severas del líquido amniótico (poli/oligohidramnios severos), isoinmunización o embarazo prolongado (> 41 semanas)."
+        explicacion: "• Criterios de Bajo Riesgo (Atención Primaria): La normativa clasifica expresamente los antecedentes de cesárea anterior y de parto pretérmino previo en Bajo Riesgo, aptos para seguimiento en atención primaria.\n• Criterios de Alto Riesgo (Segundo Nivel): Se reservan para comorbilidades crónicas activas (diabetes, cardiopatías, HTA previa), rotura prematura de membranas, gestorragias, alteraciones severas del líquido amniótico o embarazo prolongado (> 41 semanas)."
       },
       {
         id: "ITEM-12",
         type: "seleccion_multiple",
         titulo: "Tamizaje Ecográfico y Predicción de Parto Pretérmino",
-        subtitulo: "Obstetricia / Diapositiva 8: Ventanas Críticas de Tamizaje y Ultrasonografía",
+        subtitulo: "Ultrasonografía Estructural y Cervicometría del Segundo Trimestre",
         contexto: "Durante el tamizaje ultrasonográfico estructural y cervicometría realizado entre las semanas 22 y 26 de gestación, el reporte describe una longitud cervical menor de 15 mm. De acuerdo con los parámetros predictivos fijados en la guía clínica, ¿cuál es el significado pronóstico exacto de este hallazgo?",
         opciones: [
           { id: "opt-a", text: "Indica un 50% de probabilidad de desencadenar un parto pretérmino en los siguientes 7 días.", es_correcta: true },
@@ -407,13 +407,13 @@
           { id: "opt-d", text: "Indica un 25% de probabilidad de presentar rotura prematura de membranas ovulares en 7 días.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Ultrasonido Estructural y Cervicometría (Semanas 22 a 26 - Diapositiva 8): Una longitud cervical < 15 mm predice un 50% de probabilidad de parto pretérmino en los siguientes 7 días.\n\n• Análisis de distractores cruzados:\n- Opción B: El 75% corresponde a la ventana de 11 a 13.6 semanas (Translucencia Nucal identifica el 75% de cromosomopatías).\n- Opciones C y D: Asignan patologías agudas o porcentajes que no corresponden a la cervicometría."
+        explicacion: "• Valor Predictivo de la Cervicometría (Semanas 22 a 26): Una longitud cervical < 15 mm indica una probabilidad del 50% de desencadenar un parto pretérmino espontáneo dentro de los siguientes 7 días.\n• Análisis de Distractores: La tasa del 75% corresponde a la detección de cromosomopatías mediante translucencia nucal en el primer trimestre (semanas 11 a 13.6). Las opciones C y D plantean complicaciones y porcentajes sin relación con la cervicometría."
       },
       {
         id: "ITEM-13",
         type: "seleccion_multiple",
         titulo: "Tamizaje Bioquímico con Alfafetoproteína (AFP)",
-        subtitulo: "Obstetricia / Diapositiva 8: Ventanas Críticas de Tamizaje y Ultrasonografía",
+        subtitulo: "Marcadores Bioquímicos Maternos del Segundo Trimestre",
         contexto: "En la consulta prenatal de las 16 semanas se revisa el resultado del tamizaje con alfafetoproteína sérica (AFP), reportando un valor de 0.20 MoM. Conforme al algoritmo de la guía clínica para resultados alterados en esta ventana, ¿cuál es el diagnóstico de sospecha y la conducta obligatoria?",
         opciones: [
           { id: "opt-a", text: "Revela riesgo de cromosomopatías fetales, requiriéndose localizar a la paciente en menos de 48 horas.", es_correcta: true },
@@ -422,13 +422,13 @@
           { id: "opt-d", text: "Revela riesgo de insuficiencia placentaria, requiriéndose evaluación doppler materno-fetal en 48 horas.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Alfafetoproteína (AFP) en semanas 15 a 19 (Diapositiva 8):\n- Valores ≤ 0.25 MoM (como el 0.20 MoM del caso clínico): Indican riesgo de cromosomopatías y exigen localizar a la paciente en < 48 horas.\n- Valores ≥ 2.0 MoM: Indican posible malformación abierta del tubo neural y demandan ultrasonido genético en < 48 horas (descrito en Opción B).\n\n• Concepto clave: En el tamizaje sérico materno, los valores deprimidos de AFP se asocian a cromosomopatías (trisomías), mientras que los valores marcadamente elevados corresponden a defectos del tubo neural o defectos de pared abdominal."
+        explicacion: "• Interpretación de Alfafetoproteína (Semana 16): Cifras deprimidas de AFP sérica (≤ 0.25 MoM) indican riesgo de cromosomopatías fetales (aneuploidías como trisomía 21) y exigen localizar a la paciente en menos de 48 horas.\n• Análisis de Distractores: Los valores marcadamente elevados (≥ 2.0 MoM) son los asociados a defectos abiertos del tubo neural o pared abdominal (opción B)."
       },
       {
         id: "ITEM-14",
         type: "seleccion_multiple",
         titulo: "Antisépticos en el Cordón Umbilical e Interferencia en el Cribado",
-        subtitulo: "Neonatología / Diapositiva 8: Cuidados del Cordón y Diapositiva 6: Cribado",
+        subtitulo: "Cuidados del Muñón Umbilical y Tamizaje Metabólico Neonatal",
         contexto: "Neonato de 5 días de vida acude a su primer control ambulatorio. Durante la anamnesis, la madre refiere que ha estado realizando curas en el muñón umbilical aplicando povidona yodada en cada cambio de pañal. Mañana le corresponde la toma de sangre para la prueba del talón (cribado metabólico). Conforme a la alerta clínica y la matriz diagnóstica del documento, ¿cuál es el motivo específico por el cual está contraindicado el uso de soluciones yodadas en este periodo?",
         opciones: [
           { id: "opt-a", text: "Provoca una elevación transitoria de la TSH sérica, induciendo un falso positivo en el cribado de hipotiroidismo congénito.", es_correcta: true },
@@ -437,13 +437,13 @@
           { id: "opt-d", text: "Bloquea la deshidratación del muñón umbilical, retrasando el proceso fisiológico de gangrena seca más allá del décimo día.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Alerta Clínica (Diapositiva 8): EVITAR YODO. El uso tópico de antisépticos yodados puede provocar absorción transcutánea sistémica, elevando transitoriamente la TSH e induciendo un falso positivo en el cribado de hipotiroidismo congénito.\n\n• Análisis de distractores: La opción B asume erróneamente supresión de TSH; la opción C mezcla tiroxina con hiperplasia suprarrenal; y la opción D confunde el proceso de momificación umbilical con el objetivo de seguridad de la prueba del talón."
+        explicacion: "• Alerta de Seguridad Neonatal: El uso tópico de povidona yodada en el muñón umbilical provoca absorción sistémica de yodo, lo cual suprime temporalmente la glándula tiroides (efecto Wolff-Chaikoff) e induce una elevación transitoria de TSH sérica, generando un falso positivo en la prueba del talón para hipotiroidismo congénito.\n• Análisis: Las demás opciones plantean supresión errónea de TSH o confunden procesos microbiológicos locales con la detección endocrinológica."
       },
       {
         id: "ITEM-15",
         type: "seleccion_multiple",
         titulo: "Criterio Ecográfico en Displasia Evolutiva de Cadera",
-        subtitulo: "Neonatología / Diapositiva 7: Foco Clínico: Displasia Evolutiva de Cadera",
+        subtitulo: "Pesquisa Temprana de Displasia del Desarrollo de la Cadera",
         contexto: "Se evalúa a una recién nacida de 15 días en la consulta de seguimiento infantil. En el expediente consta parto eutócico en presentación cefálica y ausencia de antecedentes familiares de patología osteoarticular. En la exploración física, las maniobras de Barlow y Ortolani resultan negativas y se comprueba adecuada simetría de pliegues. La madre solicita una indicación para realizarle una ecografía de caderas por el hecho de ser niña. De acuerdo con el protocolo del documento, ¿cuál es la conducta normada?",
         opciones: [
           { id: "opt-a", text: "Desestimar la ecografía; el protocolo exige al menos dos factores de riesgo alto (presenta solo sexo femenino) y el examen físico es normal.", es_correcta: true },
@@ -452,7 +452,7 @@
           { id: "opt-d", text: "Desestimar la ecografía; el estudio por imagen se reserva de forma exclusiva a recién nacidos con antecedente de parto en podálica pura.", es_correcta: false }
         ],
         puntos: 1,
-        explicacion: "• Criterio Ecográfico Normado (Diapositiva 7): La ecografía de caderas con exploración física normal está indicada únicamente si existen ≥ 2 factores de riesgo alto concurrentes (sexo femenino, parto en podálica/nalgas, antecedentes familiares).\n\n• Análisis clínico: La paciente presenta un único factor (sexo femenino) con Barlow y Ortolani normales, por lo que la conducta adecuada es desestimar la imagen y continuar el seguimiento clínico periódico."
+        explicacion: "• Indicación Ecográfica Protocolizada: Con un examen físico normal (maniobras de Barlow y Ortolani negativas), la ecografía de caderas está indicada únicamente ante la presencia simultánea de ≥ 2 factores de riesgo alto (sexo femenino, parto podálico/nalgas o antecedentes familiares directos).\n• Conducta: Al contar únicamente con el sexo femenino como factor aislado y exploración normal, corresponde desestimar la ecografía y mantener el control clínico periódico."
       }
     ];
 
@@ -791,7 +791,7 @@
                 </li>
                 <li class="flex items-start space-x-1.5">
                   <span class="text-med-600 font-bold">•</span>
-                  <span><strong>Calificación en Escala 0.0 - 10.0:</strong> La nota final se calcula en base a los 15 ítems (mínima aprobatoria: <strong>6.0</strong>). Cada reactivo tiene el mismo valor ponderado.</span>
+                  <span><strong>Calificación en Escala 0.0 - 10.0:</strong> La nota final se calcula en base a los 15 ítems (mínima aprobatoria: <strong>7.0</strong> sobre 10.0, requiriendo al menos 11 aciertos). Cada reactivo tiene el mismo valor ponderado.</span>
                 </li>
                 <li class="flex items-start space-x-1.5">
                   <span class="text-med-600 font-bold">•</span>
@@ -984,8 +984,8 @@
           <!-- Metadatos de la Etapa -->
           <div class="bg-white rounded-2xl p-4 shadow-2xs border border-slate-200">
             <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
-              <span class="font-bold uppercase tracking-wider text-med-700">Etapa ${currentIndex + 1} de ${totalStages}</span>
-              <span class="bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold">${currentItem.type}</span>
+              <span class="font-bold uppercase tracking-wider text-med-700">Caso Clínico ${currentIndex + 1} de ${totalStages}</span>
+              <span class="bg-med-50 text-med-700 border border-med-200/80 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">1 punto</span>
             </div>
             <h2 class="text-base font-bold text-slate-900 leading-snug">${currentItem.titulo}</h2>
             <div class="mt-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 leading-relaxed">
@@ -1808,24 +1808,69 @@
         const explanation = item.explicacion || item.retroalimentacion_rapida || '';
         const expHtml = explanation 
           ? `
-            <div class="mt-3 p-3 rounded-xl bg-teal-50 border border-teal-200/80 text-xs text-teal-950 leading-relaxed">
-              <span class="font-bold text-teal-900 block mb-0.5">💡 Fundamento Clínico y Justificación:</span>
-              <p>${explanation}</p>
+            <div class="mt-3.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200/90 text-xs space-y-2">
+              <div class="flex items-center space-x-1.5 text-med-800 font-bold uppercase tracking-wider text-[11px]">
+                <span class="text-sm">💡</span>
+                <span>Fundamento Clínico y Justificación</span>
+              </div>
+              <div class="space-y-1.5 pt-0.5">
+                ${formatClinicalExplanation(explanation)}
+              </div>
             </div>
           `
           : '';
 
         return `
-          <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-2 text-left">
+          <div class="p-4 rounded-2xl border border-slate-200 bg-white shadow-2xs space-y-2.5 text-left">
             <div class="flex items-center justify-between text-xs">
               <span class="font-bold text-slate-900">Caso ${index + 1}: ${item.titulo}</span>
               ${badge}
             </div>
-            <p class="text-[11px] text-slate-600 leading-relaxed">${item.contexto}</p>
+            ${item.subtitulo ? `<p class="text-[11px] font-semibold text-med-700 leading-snug">${item.subtitulo}</p>` : ''}
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] text-slate-700 leading-relaxed">
+              <span class="font-semibold text-slate-900">📋 Caso: </span>${item.contexto}
+            </div>
             ${detailHtml}
             ${expHtml}
           </div>
         `;
+      }).join('');
+    }
+
+    // Formateador de justificación clínica formativa con viñetas limpias y negritas
+    function formatClinicalExplanation(text) {
+      if (!text) return '';
+      // Eliminar menciones a diapositivas o números de lámina por seguridad adicional
+      let cleaned = text.replace(/\(Diapositiva\s*\d+\)/gi, '')
+                        .replace(/Diapositiva\s*\d+[:\-]?/gi, '')
+                        .replace(/según la diapositiva\s*\d+/gi, '')
+                        .replace(/según la lámina\s*(oficial)?/gi, 'según el protocolo oficial');
+
+      const lines = cleaned.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      return lines.map(line => {
+        if (line.startsWith('•') || line.startsWith('-')) {
+          const raw = line.replace(/^[•\-]\s*/, '');
+          const colonIdx = raw.indexOf(':');
+          if (colonIdx > -1) {
+            const heading = raw.substring(0, colonIdx).trim();
+            const rest = raw.substring(colonIdx + 1).trim();
+            return `
+              <div class="flex items-start space-x-2 pt-1 text-xs">
+                <span class="text-med-600 font-bold shrink-0 text-sm leading-none">•</span>
+                <div class="text-slate-700 leading-relaxed">
+                  <strong class="text-slate-900 font-semibold">${heading}:</strong> ${rest}
+                </div>
+              </div>
+            `;
+          }
+          return `
+            <div class="flex items-start space-x-2 pt-1 text-xs">
+              <span class="text-med-600 font-bold shrink-0 text-sm leading-none">•</span>
+              <span class="text-slate-700 leading-relaxed">${raw}</span>
+            </div>
+          `;
+        }
+        return `<p class="text-slate-700 text-xs leading-relaxed">${line}</p>`;
       }).join('');
     }
 
