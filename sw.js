@@ -1,5 +1,5 @@
-// Service Worker para MedEval PWA (Offline-First)
-const CACHE_NAME = 'medeval-cache-v1';
+// Service Worker para MedEval PWA (Offline-First, Network-First)
+const CACHE_NAME = 'medeval-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,10 +9,11 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    })
   );
 });
 
@@ -26,33 +27,32 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Network-first falling back to cache, ensuring offline availability
+// Network-First: Siempre intenta descargar la versión más reciente; si no hay internet usa la caché
 self.addEventListener('fetch', (event) => {
-  // Ignorar llamadas POST al webhook de Google Apps Script
   if (event.request.method !== 'GET') {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
         return networkResponse;
-      }).catch(() => {
-        // Si no hay red y solicita HTML, devolver index.html cacheado
-        if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });

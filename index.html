@@ -235,6 +235,18 @@
      * Mobile-first, Offline-first, Zero External Heavy Deps
      */
 
+    // Forzar reinicio inmediato si la URL contiene ?reset=1 o ?nuevo=1
+    (function checkImmediateReset() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('reset') || params.has('nuevo') || params.has('clear')) {
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+        } catch (e) {}
+        window.location.replace(window.location.pathname);
+      }
+    })();
+
     // --- CONFIGURATION & CONSTANTS ---
     const CONFIG = {
       EXAM_TITLE: "Segundo examen parcial de Medicina Familiar",
