@@ -209,7 +209,7 @@
       EXAM_TITLE: "Evaluación Práctica: Medicina Familiar y Comunitaria",
       EXAM_CODE: "MF-2026-P1",
       SESSION_PIN: "2026", // PIN de 4 dígitos para sincronización simultánea
-      EXAM_DURATION_MINUTES: 15,
+      EXAM_DURATION_MINUTES: 30, // Tiempo total calculado para 20 preguntas (1.5 min por caso)
       WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbzxtS26_PqR-ONHTWL6qEYEhHQOUwBNc4-YGhLGpzE3pwELqiE8yLbkHqyT0OfCmdLCkw/exec",
       SALT_INTEGRITY: "MEDEVAL-FAMILIAR-HASH-2026-SECURE",
       PASSING_GRADE: 6.0,
@@ -217,8 +217,39 @@
     };
 
     // --- CLINICAL QUESTION BANK (JSON SCHEMA) ---
-    // Banco oficial de reactivos clínicos (a suministrar por el docente)
-    const CLINICAL_ITEMS_BANK = [];
+    // Banco oficial de reactivos clínicos
+    const CLINICAL_ITEMS_BANK = [
+      {
+        id: "ITEM-01",
+        type: "seleccion_multiple",
+        titulo: "Protocolo de Cribado Metabólico y Renal",
+        subtitulo: "PAPPS / Diapositiva 13: Protocolos de cribado metabólico y renal",
+        contexto: "Varón de 46 años, sin antecedentes personales de hipertensión ni diabetes, acude a revisión de salud. En la exploración física se registra un IMC de 31 kg/m² (obesidad) y una presión arterial de 126/80 mmHg. Según los protocolos del PAPPS, ¿qué periodicidad de cribado corresponde aplicar a este paciente?",
+        opciones: [
+          { id: "opt-a", text: "Toma de presión arterial cada dos años y determinación de glucemia basal cada tres años.", es_correcta: true },
+          { id: "opt-b", text: "Toma de presión arterial cada cuatro años y determinación de glucemia basal cada año.", es_correcta: false },
+          { id: "opt-c", text: "Toma de presión arterial cada dos años y determinación de glucemia basal poblacional anual.", es_correcta: false },
+          { id: "opt-d", text: "Toma de presión arterial cada cinco años y determinación de glucemia basal cada tres años.", es_correcta: false }
+        ],
+        puntos: 1,
+        explicacion: "• Hipertensión Arterial: En mayores de 40 años el cribado sistemático se realiza cada 2 años (en el grupo de 14 a 40 años es cada 4-5 años).\n• Diabetes Tipo 2: El cribado 'No es poblacional'; la directriz indica realizar glucemia basal cada 3 años únicamente en perfiles de alto riesgo (la obesidad es uno de ellos). Las opciones B, C y D contienen intervalos incorrectos para su grupo de edad o asignan una periodicidad no protocolizada."
+      },
+      {
+        id: "ITEM-02",
+        type: "seleccion_multiple",
+        titulo: "Umbrales Cuantitativos de Consumo de Alcohol",
+        subtitulo: "PAPPS / Diapositiva 10: Alcohol: Detección de umbrales de riesgo cuantitativos",
+        contexto: "Durante la exploración sistemática de estilos de vida en la consulta, un paciente varón de 34 años reporta un consumo habitual de 30 UBE semanales (300 g/semana). Según los umbrales cuantitativos y el protocolo de actuación del PAPPS, ¿cuál es la conducta correspondiente?",
+        opciones: [
+          { id: "opt-a", text: "Se encuentra en rango deseable; corresponde felicitar al paciente y repetir la detección sistemática a los cuatro años.", es_correcta: false },
+          { id: "opt-b", text: "Supera el umbral deseable sin llegar a nivel de riesgo; corresponde emitir consejo preventivo sin aplicar escalas.", es_correcta: false },
+          { id: "opt-c", text: "Supera el límite de riesgo cuantitativo; se activa la alarma clínica para aplicar de inmediato el cuestionario MALT.", es_correcta: true },
+          { id: "opt-d", text: "Cumple criterio diagnóstico de adicción física; corresponde tramitar referencia inmediata a la unidad de desintoxicación.", es_correcta: false }
+        ],
+        puntos: 1,
+        explicacion: "• Umbrales en varones: El límite deseable es <170 g/semana (<17 UBE) y el límite de riesgo cuantitativo es 280 g/semana (28 UBE).\n• Conducta: Al consumir 300 g/semana (30 UBE), el paciente supera el límite de riesgo, lo que según el algoritmo genera una 'Alarma clínica' que obliga a aplicar inmediatamente el cuestionario de dependencia (MALT). Las demás opciones subestiman el riesgo o asumen una conducta fuera de protocolo."
+      }
+    ];
 
     // --- PSEUDO-RANDOM NUMBER GENERATOR (MULBERRY32 SEED) ---
     // Garantiza que el Carné del alumno baraje reactivos y opciones de forma determinista y reproducible
