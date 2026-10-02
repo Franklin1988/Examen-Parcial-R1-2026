@@ -434,11 +434,29 @@
         }
       });
 
-      // Clic en logo de cabecera para reinicio rápido del docente/desarrollador
+      // Mecanismo oculto para el Docente: 5 toques rápidos en el logo solicitan el PIN
+      let logoClickCount = 0;
+      let logoClickTimer = null;
       const logoBtn = document.getElementById('dev-logo-btn');
       if (logoBtn) {
         logoBtn.addEventListener('click', () => {
-          resetDeveloperSession();
+          logoClickCount++;
+          clearTimeout(logoClickTimer);
+          logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+
+          if (logoClickCount >= 5) {
+            logoClickCount = 0;
+            const inputPin = prompt("🔒 Acceso Docente: Ingrese el PIN de aula para reiniciar el dispositivo:");
+            if (inputPin === CONFIG.SESSION_PIN) {
+              if (confirm("PIN correcto. ¿Deseas borrar esta evaluación y dejar el dispositivo listo para un nuevo alumno?")) {
+                localStorage.removeItem(STORAGE_KEY);
+                clearInterval(APP_STATE.timerInterval);
+                location.reload();
+              }
+            } else if (inputPin !== null) {
+              alert("PIN incorrecto.");
+            }
+          }
         });
       }
     }
@@ -1644,6 +1662,7 @@
       const receipt = APP_STATE.submissionReceipt;
       const container = document.getElementById('app-container');
       const isApproved = receipt.nota_final >= CONFIG.PASSING_GRADE;
+      const isDevMode = new URLSearchParams(window.location.search).has('dev');
 
       // Minutos y segundos empleados
       const mins = Math.floor(receipt.tiempo_empleado_segundos / 60);
@@ -1769,11 +1788,13 @@
               Reintentar Envío al Webhook de Google Sheets
             </button>
 
-            <!-- Botón Reiniciar para Docente/Desarrollador -->
+            ${isDevMode ? `
+            <!-- Botón Exclusivo Modo Desarrollador / Docente (?dev=1) -->
             <button id="btn-reset-session" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 text-slate-100 hover:bg-rose-700 active:scale-[0.99] font-bold text-xs border border-slate-700 transition-colors flex items-center justify-center space-x-1.5 shadow-xs">
               <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-              <span>🔄 Nueva Evaluación / Reiniciar Prueba (Modo Desarrollador)</span>
+              <span>🔄 Nueva Evaluación (Visible solo en Modo Docente ?dev=1)</span>
             </button>
+            ` : ''}
           </div>
 
         </div>
